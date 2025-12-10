@@ -95,8 +95,12 @@ if [[ -z "${USER-}" ]]; then
   USER="$(chomp "$(id -un)")"
   export USER
 fi
-info "Changing default user shell to bash"
-run "chpass -s /usr/local/bin/bash $USER"
+if [[ "$SHELL" == *bash* ]]; then
+  info "SHELL $SHELL already set to bash"
+else
+  info "Changing default user shell to bash"
+  run "chpass -s /usr/local/bin/bash $USER"
+fi
 
 # ---------------- Homebrew Install --------------
 if ! command -v brew >/dev/null 2>&1; then
@@ -124,8 +128,8 @@ BREWFILE="$PAYLOAD/Brewfile"
 [[ -f "$BREWFILE" ]] || error "Brewfile not found at $BREWFILE"
 
 # Update Homebrew and basic sanity
-brew update
-brew doctor || true
+#brew update
+#brew doctor || true
 
 # ---------------- Backup dotfiles ----------------
 BACKUP_DIR="$HOME/.old_dots/backup_$(date +%Y%m%d_%H%M%S)"
