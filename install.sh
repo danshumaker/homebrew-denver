@@ -20,7 +20,7 @@ fi
 
 info() { printf "%s[INFO]%s %s\n" "$COLOR_BLUE" "$COLOR_RESET" "$*"; }
 
-info "Denver version $denver_VERSION"
+info "Denver version $DENVER_VERSION"
 
 warn() { printf "%s[WARN]%s %s\n" "$COLOR_YELLOW" "$COLOR_RESET" "$*"; }
 error() {
