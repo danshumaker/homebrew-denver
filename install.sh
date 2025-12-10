@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DENVER_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
+#DENVER_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
 
 # ---------------- Color Support ----------------
 if test -t 1 && command -v tput >/dev/null 2>&1; then
@@ -20,7 +20,7 @@ fi
 
 info() { printf "%s[INFO]%s %s\n" "$COLOR_BLUE" "$COLOR_RESET" "$*"; }
 
-info "Denver version $DENVER_VERSION"
+info "Developer Envioronment Installer"
 
 warn() { printf "%s[WARN]%s %s\n" "$COLOR_YELLOW" "$COLOR_RESET" "$*"; }
 error() {
@@ -118,7 +118,7 @@ run "brew tap danshumaker/denver"
 info "Installing Denver formula..."
 run "brew install denver || true"
 
-PAYLOAD="$(brew --prefix denver)/share"
+PAYLOAD="$(brew --prefix danshumaker/denver)/share"
 BREWFILE="$PAYLOAD/Brewfile"
 
 [[ -f "$BREWFILE" ]] || error "Brewfile not found at $BREWFILE"
@@ -131,7 +131,7 @@ brew doctor || true
 BACKUP_DIR="$HOME/.old_dots/backup_$(date +%Y%m%d_%H%M%S)"
 run "mkdir -p \"$BACKUP_DIR\""
 
-info "Backing up existing dotfiles..."
+info "Backing up existing dotfiles... to $BACKUP_DIR"
 
 for f in .bash_profile .bashrc .zshrc .gitconfig; do
   if [[ -e "$HOME/$f" ]]; then
