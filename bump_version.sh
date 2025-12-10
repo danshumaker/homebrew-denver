@@ -15,5 +15,5 @@ rm Formula/denver.rb.bak
 
 git add VERSION Formula/denver.rb
 git commit -m "Bump version to ${DATE}"
-git tag "${DATE}"
-git push origin main --tags
+git tag -f "${DATE}"
+git push -f origin main --tags

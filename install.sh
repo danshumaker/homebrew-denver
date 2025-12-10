@@ -129,6 +129,8 @@ BREWFILE="$PAYLOAD/Brewfile"
 # Update Homebrew and basic sanity
 #brew update
 #brew doctor || true
+run "brew cleanup -s"
+run "rm -rf ~/Library/Caches/Homebrew/downloads/*"
 
 # ---------------- Backup dotfiles ----------------
 BACKUP_DIR="$HOME/.old_dots/backup_$(date +%Y%m%d_%H%M%S)"
