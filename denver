@@ -295,7 +295,7 @@ def audit(registry: dict) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="ShuShop - Developer Environment Manager"
+        description="Denver - Developer Environment Manager"
     )
 
     parser.add_argument(

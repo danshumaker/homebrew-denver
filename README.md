@@ -1,10 +1,10 @@
-# 🚀 ShuShop
+# Denver - Developer Environment Manager
 
-### Unified Dotfile Bootstrap System for macOS + Linux (via Homebrew, rcm, Rustup)
+### Dotfile Bootstrap System for macOS + Linux (via Homebrew, rcm, Rustup)
 
-![Version](<https://img.shields.io/badge/version-$(curl> -fsSL <https://raw.githubusercontent.com/danshumaker/homebrew-shushop/main/VERSION)-blue>)
+![Version](<https://img.shields.io/badge/version-$(curl> -fsSL <https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/VERSION)-blue>)
 
-ShuShop is a **one-repository, one-command, fully reversible system bootstrap** that installs:
+Denver is a **one-repository, one-command, fully reversible system bootstrap** that installs:
 
 - Your dotfiles (managed by `rcm`)
 - All required packages (via `brew bundle`)
@@ -18,7 +18,7 @@ Designed for **clarity, reproducibility, reversibility, and zero manual setup**.
 
 ---
 
-# 🌟 Features at a Glance
+# Features at a Glance
 
 | Feature                                | Install | Uninstall | Notes                                      |
 | -------------------------------------- | ------- | --------- | ------------------------------------------ |
@@ -38,13 +38,13 @@ Everything is **idempotent**, safe, and reversible.
 # 📦 Repository Structure
 
 ```
-homebrew-shushop/
+homebrew-denver/
 ├── Formula/
-│   └── shushop.rb       # Minimal brew formula (payload only)
+│   └── denver.rb       # Minimal brew formula (payload only)
 ├── install.sh           # Full bootstrap script
 ├── uninstall.sh         # Full teardown script (reverse of install)
 ├── Brewfile             # Declares all packages to install
-└── .dotfiles/           # rcm-managed dotfiles
+└── dotfiles/           # rcm-managed dotfiles
     ├── rcrc
     ├── config/
     │   └── op/
@@ -55,7 +55,7 @@ homebrew-shushop/
 The Homebrew formula installs the repository payload into:
 
 ```
-$(brew --prefix shushop)/share
+$(brew --prefix denver)/share
 ```
 
 The installer scripts then consume this payload.
@@ -64,17 +64,17 @@ The installer scripts then consume this payload.
 
 # 🟦 Installation
 
-Install ShuShop in **one command**:
+Install denver in **one command**:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-shushop/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/install.sh)"
 ```
 
 ### ✔ What this command does
 
 1. Installs Homebrew (if missing)
-2. Taps your tap: `danshumaker/shushop`
-3. Installs the `shushop` Homebrew formula
+2. Taps your tap: `danshumaker/denver`
+3. Installs the `denver` Homebrew formula
 4. Backs up any existing dotfiles into `~/.old_dots/backup_TIMESTAMP`
 5. Runs `brew bundle` using your Brewfile
 6. Deploys dotfiles via `rcup`
@@ -107,7 +107,7 @@ Dry-run prints each command instead of executing it.
 Teardown is **one command**:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-shushop/main/uninstall.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/uninstall.sh)"
 ```
 
 ### ✔ What gets reversed
@@ -116,7 +116,7 @@ Teardown is **one command**:
 2. Restores your most recent dotfile backup from `~/.old_dots/...`
 3. Uninstalls all Brewfile packages (`brew bundle cleanup`)
 4. Removes the Rust toolchain (`rustup self uninstall`)
-5. Uninstalls the ShuShop formula
+5. Uninstalls the denver formula
 6. Removes your tap
 
 Fonts are not removed automatically (system-wide resources).
@@ -143,7 +143,7 @@ The formula:
 - **Only** installs payload files into:
 
 ```
-$(brew --prefix shushop)/share
+$(brew --prefix denver)/share
 ```
 
 This keeps Homebrew happy while giving your installer script full control.
@@ -164,17 +164,17 @@ This keeps Homebrew happy while giving your installer script full control.
 Useful commands during development:
 
 ```bash
-brew uninstall shushop
-brew untap danshumaker/shushop
+brew uninstall denver
+brew untap danshumaker/denver
 brew tap --repair
-brew tap danshumaker/shushop
-brew install shushop
+brew tap danshumaker/denver
+brew install denver
 ```
 
 Print formula payload path:
 
 ```bash
-brew --prefix shushop
+brew --prefix denver
 ```
 
 ---

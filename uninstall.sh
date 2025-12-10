@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SHUSHOP_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
-info "ShuShop version $SHUSHOP_VERSION"
+DENVER_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
+info "Denver version $DENVER_VERSION"
 # ---------------- Colors ----------------
 if test -t 1 && command -v tput >/dev/null 2>&1; then
   BLUE="$(tput setaf 4)"
@@ -44,8 +44,8 @@ run() {
 # ---------------- Locate Payload ----------------
 command -v brew >/dev/null 2>&1 || error "Homebrew not installed."
 
-PREFIX="$(brew --prefix shushop 2>/dev/null || true)"
-[[ -d "$PREFIX" ]] || error "ShuShop payload not found."
+PREFIX="$(brew --prefix denver 2>/dev/null || true)"
+[[ -d "$PREFIX" ]] || error "denver payload not found."
 
 PAYLOAD="$PREFIX/share"
 BREWFILE="$PAYLOAD/Brewfile"
@@ -86,10 +86,10 @@ if command -v rustup >/dev/null 2>&1; then
 fi
 
 # ---------------- Remove formula + tap -------------
-info "Uninstalling shushop formula..."
-run "brew uninstall shushop || true"
+info "Uninstalling denver formula..."
+run "brew uninstall denver || true"
 
-info "Removing tap danshumaker/shushop..."
-run "brew untap danshumaker/shushop || true"
+info "Removing tap danshumaker/denver..."
+run "brew untap danshumaker/denver || true"
 
-ok "ShuShop uninstallation complete."
+ok "denver uninstallation complete."

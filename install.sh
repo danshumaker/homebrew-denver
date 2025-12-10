@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SHUSHOP_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
+DENVER_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
 
 # ---------------- Color Support ----------------
 if test -t 1 && command -v tput >/dev/null 2>&1; then
@@ -20,7 +20,7 @@ fi
 
 info() { printf "%s[INFO]%s %s\n" "$COLOR_BLUE" "$COLOR_RESET" "$*"; }
 
-info "ShuShop version $SHUSHOP_VERSION"
+info "Denver version $denver_VERSION"
 
 warn() { printf "%s[WARN]%s %s\n" "$COLOR_YELLOW" "$COLOR_RESET" "$*"; }
 error() {
@@ -112,13 +112,13 @@ run 'eval "$(/usr/local/bin/brew shellenv 2>/dev/null || true)"'
 run 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || true)"'
 
 # ---------------- Tap + Install formula ----------
-info "Tapping danshumaker/shushop..."
-run "brew tap danshumaker/shushop"
+info "Tapping danshumaker/denver..."
+run "brew tap danshumaker/denver"
 
-info "Installing shushop formula..."
-run "brew install shushop || true"
+info "Installing Denver formula..."
+run "brew install denver || true"
 
-PAYLOAD="$(brew --prefix shushop)/share"
+PAYLOAD="$(brew --prefix denver)/share"
 BREWFILE="$PAYLOAD/Brewfile"
 
 [[ -f "$BREWFILE" ]] || error "Brewfile not found at $BREWFILE"
@@ -179,4 +179,4 @@ if [[ "$PLATFORM" == "macos" ]]; then
   fi
 fi
 
-ok "ShuShop installation complete."
+ok "Denver installation complete."
