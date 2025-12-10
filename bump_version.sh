@@ -6,7 +6,7 @@ DATE=$(date "+%Y-%m-%d_%H_%M_%S")
 echo "$DATE" >VERSION
 
 # Recompute SHA
-TAR_URL="https://github.com/danshumaker/homebrew-denver/archive/refs/tags/v${DATE}.tar.gz"
+TAR_URL="https://github.com/danshumaker/homebrew-denver/archive/refs/tags/${DATE}.tar.gz"
 SHA=$(curl -L "$TAR_URL" | shasum -a 256 | awk '{print $1}')
 
 sed -i.bak "s/sha256 \".*\"/sha256 \"${SHA}\"/" Formula/denver.rb
