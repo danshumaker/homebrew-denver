@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-#DENVER_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
-
 # ---------------- Color Support ----------------
 if test -t 1 && command -v tput >/dev/null 2>&1; then
   COLOR_BLUE="$(tput setaf 4)"
@@ -122,7 +120,7 @@ run "brew tap danshumaker/denver"
 info "Installing Denver formula..."
 run "brew install denver || true"
 
-PAYLOAD="$(brew --prefix danshumaker/denver)/share"
+PAYLOAD="$(brew --prefix denver)/share"
 BREWFILE="$PAYLOAD/Brewfile"
 
 [[ -f "$BREWFILE" ]] || error "Brewfile not found at $BREWFILE"
