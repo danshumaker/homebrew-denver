@@ -356,28 +356,6 @@ function vfd() {
   nvim -p $(fd $1)
 }
 
-# Switch the loaded ssh key
-function ss() {
-
-  if [[ $1 == 'w' ]]; then
-    ssh-add -D
-    ssh-add ~/.ssh/dshumaker_unleashed
-    ssh-add -L
-    #export PANTHEON_MACHINE_TOKEN=xcCBFT63Hho0vieFbqvf7UZvLPGeMz_dl-f9OPKCkjfO0
-    # For AAU project
-    export PANTHEON_MACHINE_TOKEN=BGLZD13xEYoxtxnO3rtI_8wyk8PsJf_oRS7hbrZcvmr3c
-    # terminus auth:login --email=dshumaker@unleashed-technologies.com
-    # terminus site:list
-  else
-    ssh-add -D
-    ssh-add ~/.ssh/shuPersonal
-    ssh-add -L
-    export PANTHEON_MACHINE_TOKEN=Jkba1OhI8Dmyo73ojezQyG0w2AFYEWtG_XBYPM9-Pe4q1
-    #terminus auth:login --email=danpshumaker@gmail.com
-    #terminus site:list
-  fi
-}
-
 # bash completion for the `wp` command
 # what is the wp command?
 _wp_complete() {

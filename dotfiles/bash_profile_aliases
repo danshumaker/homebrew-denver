@@ -140,8 +140,6 @@ alias fxoff="fin config set --env=local XDEBUG_ENABLED=0 && fin restart cli"
 alias qa='git co qa'
 alias tlzd='tmuxinator start lzd'
 
-alias utvpn='cat ~/.ssh/.ocvpn_secret | sudo openconnect -u dshumaker --passwd-on-stdin https://remote.unleashed-technologies.com --authgroup=WEBVPN --servercert pin-sha256:6EyIS+skiO7QDhFot0xinOi8rIJCteecQaaSKpPM23c= -q'
-alias cpavpn='cat ~/.ssh/.oc_ficpa_vpn_secret | sudo openconnect 199.44.61.253 -u ultech1 --authgroup=ULTE-RW --servercert pin-sha256:F9/WxKgejU/ZFaDp6fiD+eBNOT2MVkpqsqKtIWBHDWo=  -q'
 alias nprssh='ssh dshumaker@dev1.publicbroadcasting.net'
 alias vss='v ~/.ssh/config'
 alias vhot='v ~/.config/nvim/lua/settings/keymap.lua ~/.dotfiles/README.md'
