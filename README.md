@@ -1,8 +1,31 @@
 # Denver - Developer Environment Manager
 
-### Dotfile Bootstrap System for macOS + Linux (via Homebrew, rcm, Rustup)
+## Dotfile and homebrew installer
 
-![Version](<https://img.shields.io/badge/version-$(curl> -fsSL <https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/VERSION)-blue>)
+<p align="center">
+
+  <!-- Latest Version Tag -->
+  <img alt="Version" src="https://img.shields.io/github/v/tag/danshumaker/homebrew-denver?label=version&color=blue">
+
+  <!-- Release Date -->
+  <img alt="Release Date" src="https://img.shields.io/github/release-date/danshumaker/homebrew-denver?color=blueviolet">
+
+  <!-- Build Status -->
+  <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/danshumaker/homebrew-denver/bump.yml?label=CI">
+
+  <!-- License -->
+  <img alt="License" src="https://img.shields.io/github/license/danshumaker/homebrew-denver">
+
+  <!-- GitHub Repo Size -->
+  <img alt="Repo Size" src="https://img.shields.io/github/repo-size/danshumaker/homebrew-denver">
+
+  <!-- Total Downloads -->
+  <img alt="Downloads" src="https://img.shields.io/github/downloads/danshumaker/homebrew-denver/total?color=brightgreen">
+
+  <!-- Homebrew Formula Checker -->
+  <img alt="Homebrew Formula" src="https://img.shields.io/badge/homebrew-tap-blue?logo=homebrew">
+
+</p>
 
 Denver is a **one-repository, one-command, fully reversible system bootstrap** that installs:
 

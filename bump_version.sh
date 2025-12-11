@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-set -xv
 DATE=$(date "+%Y-%m-%d_%H_%M_%S")
 
 echo "$DATE" >VERSION
