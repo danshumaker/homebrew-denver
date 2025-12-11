@@ -45,6 +45,8 @@ jobs:
 
       - name: Commit updated formula
         run: |
+          VERSION="${{ steps.vars.outputs.version }}"
+          SHA="${{ steps.sha.outputs.sha256 }}"
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
 
