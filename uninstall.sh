@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Denver Uninstall ( https://github.com/danshumaker/homebrew-denver )
 set -euo pipefail
 
 # ---------------- Colors ----------------
@@ -45,49 +46,70 @@ command -v brew >/dev/null 2>&1 || error "Homebrew not installed."
 PREFIX="$(brew --prefix denver 2>/dev/null || true)"
 [[ -d "$PREFIX" ]] || error "denver payload not found."
 
-PAYLOAD="$PREFIX/share"
+PAYLOAD="$PREFIX/share/denver"
 BREWFILE="$PAYLOAD/Brewfile"
 
 # ---------------- Remove symlinks (rcdn) -----------
-if command -v rcdn >/dev/null 2>&1; then
-  info "Removing rcm symlinks..."
-  run "rcdn -d \"$PAYLOAD\""
-else
-  warn "rcdn not found — cannot remove rcup symlinks."
-fi
+un_dotfiles() {
+  if command -v rcdn >/dev/null 2>&1; then
+    info "Removing Dotfile RCM symlinks..."
+    cd "$HOME"
+    run "rcdn -v -d \"$PAYLOAD\""
+  else
+    warn "rcdn not found — cannot remove rcup symlinks."
+  fi
+}
 
 # ---------------- Restore backups ------------------
-if [[ -d "$HOME/.old_dots" ]]; then
-  LAST_BACKUP="$(ls -1dt "$HOME/.old_dots"/* 2>/dev/null | head -1)"
-  if [[ -d "$LAST_BACKUP" ]]; then
-    info "Restoring backup from $LAST_BACKUP"
-    run "cp -R \"$LAST_BACKUP/.\" \"$HOME/\""
+restore_old_dotfiles() {
+  if [[ -d "$HOME/.old_dots" ]]; then
+    LAST_BACKUP="$(ls -1dt "$HOME/.old_dots"/* 2>/dev/null | head -1)"
+    if [[ -d "$LAST_BACKUP" ]]; then
+      info "Restoring backup from $LAST_BACKUP"
+      run "cp -R \"$LAST_BACKUP/.\" \"$HOME/\""
+    else
+      warn "No backups found inside ~/.old_dots"
+    fi
   else
-    warn "No backups found inside ~/.old_dots"
+    warn "~/.old_dots does not exist; no backups to restore."
   fi
-else
-  warn "~/.old_dots does not exist; no backups to restore."
-fi
+}
 
 # ---------------- Uninstall Brew packages ----------
-if [[ -f "$BREWFILE" ]]; then
-  info "Removing Brewfile packages..."
-  run "brew bundle cleanup --file=\"$BREWFILE\" --force"
-else
-  warn "Brewfile not found; skipping package removal."
-fi
+bundle_cleanup() {
+  if [[ -f "$BREWFILE" ]]; then
+    info "Removing Brewfile packages..."
+    run "brew bundle cleanup --file=\"$BREWFILE\" --force"
+  else
+    warn "Brewfile not found; skipping package removal."
+  fi
+}
 
 # ---------------- Uninstall Rust -------------------
-if command -v rustup >/dev/null 2>&1; then
-  info "Removing Rust toolchain..."
-  run "rustup self uninstall -y"
-fi
+un_rust() {
+  if command -v rustup >/dev/null 2>&1; then
+    info "Removing Rust toolchain..."
+    run "rustup self uninstall -y"
+  fi
+}
 
 # ---------------- Remove formula + tap -------------
-info "Uninstalling denver formula..."
-run "brew uninstall denver || true"
+un_denver() {
+  info "Uninstalling denver formula..."
+  run "brew uninstall denver || true"
 
-info "Removing tap danshumaker/denver..."
-run "brew untap danshumaker/denver || true"
+  info "Removing tap danshumaker/denver..."
+  run "brew untap danshumaker/denver || true"
+}
 
-ok "denver uninstallation complete."
+main() {
+
+  un_dotfiles
+  restore_old_dotfiles
+  bundle_cleanup
+  un_rust
+  un_denver
+  ok "Denver Uninstallation Complete."
+}
+
+main "$@"

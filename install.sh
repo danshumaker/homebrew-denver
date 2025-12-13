@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Denver Install ( https://github.com/danshumaker/homebrew-denver )
 set -euo pipefail
 
 # ---------------- Color Support ----------------
@@ -277,6 +278,8 @@ rust_install() {
 
 # ---------------- Install Fonts (macOS only) -------
 font_install() {
+  # even though some of these are in the brewfile, this command will install more if they are available.
+  #
   if [[ "$PLATFORM" == "macos" ]]; then
     # TODO: Possible install powerline fonts https://github.com/powerline/fonts.git
     brew search '/font-.*-nerd-font/' | awk '{ print $1 }' | xargs brew install
@@ -316,7 +319,7 @@ main() {
   bundle_install
   php_install
   rcm_setup
-  font_install
+  # font_install # transition to brew bundle dump --describe method of keeping track of fonts
   kitty_config
 
   ok "Denver installation complete."

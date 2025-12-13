@@ -1,7 +1,5 @@
 # Denver - Developer Environment Manager
 
-## Dotfile and homebrew installer
-
 <p align="center">
 
   <!-- Latest Version Tag -->
@@ -27,69 +25,29 @@
 
 </p>
 
-Denver is dotfile, tool and environment setup system initially designed for the occasion when new hardward (Desktop | Laptop) is received and needs a quick setup.
-It is designed to do all the downloading for you and installation. Some configuration after the install is still required.
+## New Machine Developer Setup
 
-- dotfiles managed by git and installed by rcm
-- tools installed & managed by homebrew
-- Rust Installed
-- All nerd fonts installed
+- Denver is a dotfile and developer tool setup system initially designed for new user account setup.
+- It assumes that close to nothing is installed (not git, not Xcode, not node, etc)
+- It is designed to do all the downloading and installation for you.
+- Installation requires curl and the internet.
 
-## Todo
+## Features & Installations
 
-- System configuration and permission fixes
-- Authentication runs/fixes/settings
-  - npm token
-  - gh token and Authentication
-  - 1pass-cli setup
-
----
-
-# Features at a Glance
-
-| Feature                                | Install | Uninstall | Notes                                      |
-| -------------------------------------- | ------- | --------- | ------------------------------------------ |
-| Homebrew installation                  | ✅      | —         | Installed automatically if missing         |
-| Brewfile-driven package management     | ✅      | ✅        | Uses `brew bundle` + `brew bundle cleanup` |
-| rcm-based dotfile deployment           | ✅      | ✅        | `rcup` to install, `rcdn` to remove        |
-| Rust toolchain installation            | ✅      | ✅        | Uses `rustup`                              |
-| Terminal font installation (macOS)     | ✅      | —         | Optional but automatic                     |
-| Automatic backup + restore of dotfiles | ✅      | ✅        | Timestamped backups under `~/.old_dots`    |
-| Full dry-run mode                      | ✅      | ✅        | `--dry-run` or `-n`                        |
-| Homebrew formula payload system        | ✅      | —         | Clean packaging via `pkgshare`             |
-
-Everything is **idempotent**, safe, and reversible.
-
----
-
-The Homebrew formula installs the repository payload into:
-
-```
-$(brew --prefix denver)/share
-```
-
-The installer scripts then consume this payload.
+- Dotfiles managed by git(via homebrew) and setup by [RCM](https://github.com/thoughtbot/rcm)
+- Tools managed by [Homebrew](https://brew.sh/)
+- [Cargo](https://doc.rust-lang.org/cargo/index.html) The rust package manager
+- All Nerd Fonts (via homebrew)
+- Dry-run mode (just output with no execution)
+- Dotfile backup into .old_dots/ BEFORE installation
 
 ---
 
 # 🟦 Installation
 
-Install denver in **one command**:
-
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/install.sh)"
 ```
-
-### ✔ What this command does
-
-1. Installs Homebrew (if missing)
-2. Taps your tap: `danshumaker/denver`
-3. Installs the `denver` Homebrew formula
-4. Backs up any existing dotfiles into `~/.old_dots/backup_TIMESTAMP`
-5. Runs `brew bundle` using your Brewfile
-6. Deploys dotfiles via `rcup`
-7. Installs Rust toolchain
-8. Installs macOS Terminal fonts (macOS only)
 
 ---
 
@@ -130,8 +88,6 @@ Teardown is **one command**:
 
 Fonts are not removed automatically (system-wide resources).
 
----
-
 # 🔄 Dry-run Mode for Uninstall
 
 Preview what _would_ be removed:
@@ -139,8 +95,6 @@ Preview what _would_ be removed:
 ```bash
 /bin/bash uninstall.sh --dry-run
 ```
-
----
 
 # 🧭 Homebrew Formula Behavior
 
@@ -156,8 +110,6 @@ $(brew --prefix denver)/share
 ```
 
 This keeps Homebrew happy while giving your installer script full control.
-
----
 
 # 🔐 Security Notes
 
@@ -199,4 +151,10 @@ MIT License — Do whatever you want, just don’t blame me.
 - show list of NON-tracked dot files with explainations why they are not tracked.
 - Convert all hashes and tokens (gh, terminus, acquia, etc) over to use 1pass-cli (op)
 - test install (xcode, bash, kitty, brewfile, prompt, tmux, 1pass-cli and shutrail.) on laptop
-- test uninstall
+- Permission Fixes
+- Authentication runs/fixes/settings
+  - npm token
+  - gh token and Authentication
+  - 1pass-cli setup
+- Uninstall verification&testing
+- Develop and test on linux and windows.
