@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DENVER_VERSION="$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo 'unknown')"
-info "Denver version $DENVER_VERSION"
 # ---------------- Colors ----------------
 if test -t 1 && command -v tput >/dev/null 2>&1; then
   BLUE="$(tput setaf 4)"

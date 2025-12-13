@@ -1,21 +1,14 @@
-# Dart ( https://dart.dev/tools )
-# tap "dart-lang/dart"
-# tap "eugenmayer/dockersync"
+tap "dart-lang/dart"
 tap "mutagen-io/mutagen"
 tap "pantheon-systems/external"
 tap "sass/sass"
 tap "universal-ctags/universal-ctags"
 # Portable ASCII art graphics library
 brew "aalib"
-# Automate deployment, configuration, and upgrading
 # Library for manipulating PNG images
 brew "libpng"
 # Record and share terminal sessions
 brew "asciinema"
-# Core application library for C
-brew "glib"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # Macro processing language
 brew "m4"
 # Automatic configure script builder
@@ -32,6 +25,8 @@ brew "bash-completion"
 brew "freetype"
 # XML-based font configuration API for X Windows
 brew "fontconfig"
+# Core application library for C
+brew "glib"
 # OpenType text shaping engine
 brew "harfbuzz"
 # Development kit for the Java programming language
@@ -40,8 +35,6 @@ brew "openjdk"
 brew "bfg"
 # Collection of portable C++ source libraries
 brew "boost"
-# Platform built on V8 to build network applications
-brew "node"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
 # Fuzzy matcher that uses std{in,out} and a native GUI
@@ -60,14 +53,14 @@ brew "freetds"
 brew "libpq"
 # Granddaddy of HTML tools, with support for modern standards
 brew "tidy-html5"
+# General-purpose scripting language
+brew "php"
 # Dependency Manager for PHP
 brew "composer"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Message bus system, providing inter-application communication
 brew "dbus"
-# Open source programming language to build simple/reliable/efficient software
-brew "go"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
 # Isolated development environments using Docker
@@ -76,11 +69,15 @@ brew "docker-compose"
 brew "docker-credential-helper"
 # Create Docker hosts locally and on cloud providers
 brew "docker-machine"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.14"
 # Text processing system for reStructuredText
 brew "docutils"
+# Open-source, cross-platform JavaScript runtime environment
+brew "node"
 # AST-based pattern checker for JavaScript
 brew "eslint"
-# Modern replacement for 'ls'
+# Modern, maintained replacement for ls
 brew "eza"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
@@ -108,10 +105,10 @@ brew "glab"
 brew "global"
 # Render markdown on the CLI
 brew "glow"
-# X.509 and CMS library
-brew "libksba"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
+# Open source programming language to build simple/reliable/efficient software
+brew "go"
 # Generate introspection data for GObject libraries
 brew "gobject-introspection"
 # GNU grep, egrep and fgrep
@@ -126,8 +123,8 @@ brew "jq"
 brew "lazygit"
 # Pager program similar to more
 brew "less"
-# CSS parsing and manipulation toolkit for GNOME
-brew "libcroco"
+# X.509 and CMS library
+brew "libksba"
 # Library to render SVG files using Cairo
 brew "librsvg"
 # Library that implements the rsync remote-delta algorithm
@@ -145,7 +142,7 @@ brew "luarocks"
 # Mac App Store command-line interface
 brew "mas"
 # Hash utilities
-brew "md5sha1sum", link: false
+brew "md5sha1sum"
 # Simple tool to make locally trusted development certificates
 brew "mkcert"
 # General-purpose lossless data-compression library
@@ -168,8 +165,6 @@ brew "php-cs-fixer"
 brew "pstree"
 # Python version management
 brew "pyenv"
-# Interpreted, interactive, object-oriented programming language
-brew "python"
 # Ruby version manager
 brew "rbenv"
 # RC file (dotfile) management
@@ -208,11 +203,32 @@ brew "mutagen-io/mutagen/mutagen"
 brew "pantheon-systems/external/terminus"
 # Stylesheet Preprocessor
 brew "sass/sass/sass"
+# Command-line interface for 1Password
+cask "1password-cli"
+cask "font-0xproto-nerd-font"
+cask "font-3270-nerd-font"
+cask "font-adwaita-mono-nerd-font"
+cask "font-agave-nerd-font"
+cask "font-anonymice-nerd-font"
+cask "font-arimo-nerd-font"
+cask "font-atkynson-mono-nerd-font"
+cask "font-aurulent-sans-mono-nerd-font"
+cask "font-bigblue-terminal-nerd-font"
+cask "font-bitstream-vera-sans-mono-nerd-font"
+cask "font-blex-mono-nerd-font"
+cask "font-caskaydia-cove-nerd-font"
+cask "font-caskaydia-mono-nerd-font"
+cask "font-code-new-roman-nerd-font"
+cask "font-comic-shanns-mono-nerd-font"
+cask "font-commit-mono-nerd-font"
+cask "font-cousine-nerd-font"
+cask "font-d2coding-nerd-font"
+cask "font-daddy-time-mono-nerd-font"
+cask "font-dejavu-sans-mono-nerd-font"
+cask "font-departure-mono-nerd-font"
 # GPU-based terminal emulator
 cask "kitty"
 # MySQL/MariaDB database management
 cask "sequel-ace"
 # Binary releases of VS Code without MS branding/telemetry/licensing
 cask "vscodium"
-# 1Password api
-cask "1password-cli"
