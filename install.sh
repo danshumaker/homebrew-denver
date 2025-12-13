@@ -146,7 +146,7 @@ homebrew_install() {
 
 # ---------------- Tap + Install formula ----------
 denver_install() {
-  run "brew untap danshumaker/denver --force"
+  run "brew update"
   info "Tapping danshumaker/denver..."
   run "brew tap danshumaker/denver"
   run "brew upgrade"

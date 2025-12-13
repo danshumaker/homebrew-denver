@@ -54,10 +54,11 @@ un_dotfiles() {
   if command -v rcdn >/dev/null 2>&1; then
     info "Removing Dotfile RCM symlinks..."
     cd "$HOME"
-    run "rcdn -v -d \"$PAYLOAD\""
+    run "rcdn -v -d \"$PAYLOAD\"/dotfiles"
   else
     warn "rcdn not found — cannot remove rcup symlinks."
   fi
+
 }
 
 # ---------------- Restore backups ------------------
@@ -93,22 +94,12 @@ un_rust() {
   fi
 }
 
-# ---------------- Remove formula + tap -------------
-un_denver() {
-  info "Uninstalling denver formula..."
-  run "brew uninstall denver || true"
-
-  info "Removing tap danshumaker/denver..."
-  run "brew untap danshumaker/denver || true"
-}
-
 main() {
 
   un_dotfiles
   restore_old_dotfiles
   bundle_cleanup
   un_rust
-  un_denver
   ok "Denver Uninstallation Complete."
 }
 
