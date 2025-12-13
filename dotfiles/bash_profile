@@ -37,8 +37,8 @@ if [[ -s $HOME/.bash_profile_functions ]]; then
   prep $HOME/.gem/bin
   prep $HOME/.rbenv/shims
   prep $HOME/.rbenv/bin
-  # prep ${brewh}/opt/gnu-sed/libexec/gnubin
-  # prep ${brewh}/opt/coreutils/libexec/gnubin
+  prep ${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin
+  prep ${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin
   # TESTING bitbucket-cmd development
   #prep $HOME/danshumaker.github.io/bitbucket-cmd/bin
   addp /usr/bin
