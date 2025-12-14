@@ -159,11 +159,14 @@ denver_install() {
 
   # ---------------- Verify Installation Success ----------------
   DENVER_PREFIX="$(brew --prefix denver || true)"
+  PAYLOAD_DIR="$DENVER_PREFIX/share/denver"
+  BREWFILE=$PAYLOAD_DIR/Brewfile
+  DOTS=$PAYLOAD_DIR/dotfiles
+  BACKUP_DIR="$HOME/.old_dots/backup_$(date +%Y%m%d_%H%M%S)"
+
   if [[ ! -d "$DENVER_PREFIX" ]]; then
     error "Denver prefix not found at: $DENVER_PREFIX"
   fi
-
-  PAYLOAD_DIR="$DENVER_PREFIX/share/denver"
 
   if [[ ! -d "$PAYLOAD_DIR" ]]; then
     error "Denver payload directory missing: $PAYLOAD_DIR"
@@ -172,7 +175,6 @@ denver_install() {
   info "Denver payload detected at: $PAYLOAD_DIR"
 
   # ---------------- Verify Brewfile Exists ----------------
-  BREWFILE="$PAYLOAD_DIR/Brewfile"
 
   if [[ ! -f "$BREWFILE" ]]; then
     error "Brewfile missing at: $BREWFILE"
@@ -187,16 +189,17 @@ denver_install() {
 
 # ---------------- Backup dotfiles ----------------
 dotfile_backup() {
-  BACKUP_DIR="$HOME/.old_dots/backup_$(date +%Y%m%d_%H%M%S)"
   run "mkdir -p \"$BACKUP_DIR\""
 
   info "Backing up existing dotfiles... to $BACKUP_DIR"
 
-  DOTS="$PAYLOAD_DIR"/dotfiles
   files=$(find "$DOTS" -type f -depth 1)
   for f in ${files[@]}; do
     if [[ -e "$HOME/.$f" ]]; then
+      info "BACKUP pre-existing $f"
       run "mv -v \"$HOME/.$f\" \"$BACKUP_DIR/\""
+    else
+      info "NO pre-existing $f"
     fi
   done
 }
@@ -234,7 +237,7 @@ safe_brew_bundle() {
   info "Running brew bundle using ${brewfile}…"
 
   # Brew bundle returns non-zero only on a real failure
-  if ! brew bundle --file="${brewfile}" >"${logfile}" 2>&1; then
+  if ! brew bundle --upgrade --file="${brewfile}" >"${logfile}" 2>&1; then
     echo "--- /tmp/brew-bundle.log ---" >&2
     tail -n 80 "${logfile}" >&2 || true
     error "brew bundle failed. See ${logfile}"
@@ -264,6 +267,7 @@ rcm_setup() {
     error "RCM up did not link dotfiles."
   else
     ok "Dotfiles installed"
+    lsrc -D "$DOTS"
   fi
 }
 
@@ -295,22 +299,6 @@ font_install() {
   fi
 }
 
-kitty_config() {
-  KITTY_CONF="$HOME/.config/kitty/kitty.conf"
-
-  if [[ ! -f "$KITTY_CONF" ]]; then
-    warn "kitty.conf not found"
-    return
-  fi
-
-  if ! grep -q '^shell \$SHELL --login' "$KITTY_CONF"; then
-    warn "Kitty is not configured to use '\$SHELL --login'"
-    warn "Expected: shell \$SHELL --login"
-  else
-    ok "Kitty shell configuration is correct"
-  fi
-}
-
 main() {
   xcode_install
   change_shell
@@ -320,20 +308,18 @@ main() {
   bundle_install
   php_install
   rcm_setup
-  # font_install # transition to brew bundle dump --describe method of keeping track of fonts
-  kitty_config
 
   ok "Denver installation complete."
   warn "CONFIGURATION LEFT TODO"
-  info " - Kitty shell usage"
   info " - Configure 1Pass-cli .config/op/config"
   info " - ^S^I in Tmux to picup installed plugins"
   info " - .config/gh github authentication"
-  info " - possible powerline fonts install git clone https://github.com/powerline/fonts "
   info " - configure .ssh do ssh-keygen but also convert to 1Pass-OP"
   info " - Ensure docksal, colima, and terminus work"
   info " - Ensure node and hugo work in resume theme"
   info " - Ensure shutrail standsup"
+  # ✓ Kitty shell usage"
+  # ✓ (used nerd-font forumlas instead) (possible powerline fonts install git clone https://github.com/powerline/fonts "
 
 }
 
