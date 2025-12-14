@@ -235,6 +235,8 @@ safe_brew_bundle() {
 
   # Brew bundle returns non-zero only on a real failure
   if ! brew bundle --file="${brewfile}" >"${logfile}" 2>&1; then
+    echo "--- /tmp/brew-bundle.log ---" >&2
+    tail -n 80 "${logfile}" >&2 || true
     error "brew bundle failed. See ${logfile}"
   fi
 
@@ -244,7 +246,6 @@ safe_brew_bundle() {
 # ---------------- Brew bundle --------------------
 bundle_install() {
   info "Running brew bundle..."
-  run "brew tap homebrew/bundle || true"
   safe_brew_bundle "$BREWFILE"
 }
 
