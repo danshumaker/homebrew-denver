@@ -7,7 +7,9 @@ echo "$DATE" >VERSION
 
 sed -i "s/version \".*\"/version \"${DATE}\"/" Formula/denver.rb
 
+git fetch origin main
+git rebase origin/main
 git add VERSION Formula/denver.rb
 git commit -m "Bump version to ${DATE}"
 git tag -f "${DATE}"
-git push -f origin main --tags
+git push --force-with-lease origin main --tags

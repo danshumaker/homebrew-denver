@@ -49,7 +49,6 @@ jobs:
           SHA="${{ steps.sha.outputs.sha256 }}"
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-
           git add Formula/denver.rb
           git commit -m "GitHub-Actions: Auto-update formula for version $VERSION with $SHA"
           git push origin main
