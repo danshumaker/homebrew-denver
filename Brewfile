@@ -141,8 +141,6 @@ brew "lua-language-server"
 brew "luarocks"
 # Mac App Store command-line interface
 brew "mas"
-# Hash utilities
-brew "md5sha1sum"
 # Simple tool to make locally trusted development certificates
 brew "mkcert"
 # General-purpose lossless data-compression library
