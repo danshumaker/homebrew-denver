@@ -25,14 +25,14 @@
 
 </p>
 
-## New Machine Developer Setup
+### New Machine Developer Setup
 
 - Denver is a dotfile and developer tool setup system initially designed for new user account setup.
 - It assumes that close to nothing is installed (not git, not Xcode, not node, etc)
 - It is designed to do all the downloading and installation for you.
 - Installation requires curl and the internet.
 
-## Features & Installations
+### Features & Installations
 
 - Dotfiles managed by git(via homebrew) and setup by [RCM](https://github.com/thoughtbot/rcm)
 - Tools managed by [Homebrew](https://brew.sh/)
@@ -41,62 +41,17 @@
 - Dry-run mode (just output with no execution)
 - Dotfile backup into .old_dots/ BEFORE installation
 
----
-
-# 🟦 Installation
+### Instal & Uninstall
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/install.sh)"
 ```
 
----
-
-# 🧪 Dry-run Mode (safe preview)
-
-You can simulate the entire installation without touching your system:
-
-```bash
-/bin/bash install.sh --dry-run
-```
-
-or
-
-```bash
-/bin/bash install.sh -n
-```
-
-Dry-run prints each command instead of executing it.
-
----
-
-# 🟥 Uninstallation
-
-Teardown is **one command**:
-
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/uninstall.sh)"
 ```
 
-### ✔ What gets reversed
-
-1. Removes all `rcp`-created symlinks (`rcdn`)
-2. Restores your most recent dotfile backup from `~/.old_dots/...`
-3. Uninstalls all Brewfile packages (`brew bundle cleanup`)
-4. Removes the Rust toolchain (`rustup self uninstall`)
-5. Uninstalls the denver formula
-6. Removes your tap
-
-Fonts are not removed automatically (system-wide resources).
-
-# 🔄 Dry-run Mode for Uninstall
-
-Preview what _would_ be removed:
-
-```bash
-/bin/bash uninstall.sh --dry-run
-```
-
-# 🧭 Homebrew Formula Behavior
+### Homebrew Formula Behavior
 
 The formula:
 
@@ -111,7 +66,7 @@ $(brew --prefix denver)/share
 
 This keeps Homebrew happy while giving your installer script full control.
 
-# 🔐 Security Notes
+### Security Notes
 
 - Homebrew handles checksum verification for the formula tarball.
 - No checksum logic is included in the scripts.
@@ -120,7 +75,13 @@ This keeps Homebrew happy while giving your installer script full control.
 
 ---
 
-# 🧰 Developer Notes
+### Developer Notes
+
+Make repo private for the time being:
+
+```bash
+gh repo edit --visibility private --
+```
 
 Useful commands during development:
 
@@ -138,23 +99,35 @@ Print formula payload path:
 brew --prefix denver
 ```
 
+#### Dry-run Mode (safe preview)
+
+You can simulate the entire installation without touching your system:
+
+```bash
+/bin/bash install.sh --dry-run
+```
+
+or
+
+```bash
+/bin/bash install.sh -n
+```
+
+Dry-run prints each command instead of executing it
 ---
 
-# 📄 License
+#### License
 
 MIT License — Do whatever you want, just don’t blame me.
 
 ---
 
-# 🙋 TODO
+##### TODO
 
-- show list of NON-tracked dot files with explainations why they are not tracked.
-- Convert all hashes and tokens (gh, terminus, acquia, etc) over to use 1pass-cli (op)
-- test install (xcode, bash, kitty, brewfile, prompt, tmux, 1pass-cli and shutrail.) on laptop
-- Permission Fixes
-- Authentication runs/fixes/settings
+- denver.py script: Show list of NON-tracked dot files with explainations why they are not tracked.
+- install.sh :    Authentication runs/fixes/settings
   - npm token
   - gh token and Authentication
   - 1pass-cli setup
-- Uninstall verification&testing
-- Develop and test on linux and windows.
+- Linux & Windows suport
+- release to public (make user agnostic)
