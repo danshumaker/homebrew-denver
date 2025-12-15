@@ -302,10 +302,10 @@ font_install() {
 
 main() {
   xcode_install
-  change_shell
   homebrew_install
   denver_install
   dotfile_backup
+  change_shell
   bundle_install
   php_install
   rcm_setup
