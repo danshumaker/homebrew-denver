@@ -117,7 +117,7 @@ main() {
 
   un_dotfiles
   restore_old_dotfiles
-  bundle_cleanup
+  #bundle_cleanup
   bundle_remove
   un_rust
   ok "Denver Uninstallation Complete."
