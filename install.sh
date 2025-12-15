@@ -194,7 +194,7 @@ dotfile_backup() {
   info "Backing up existing dotfiles... to $BACKUP_DIR"
 
   files=$(find "$DOTS" -type f -depth 1)
-  for f in "${files[@]}"; do
+  for f in ${files[@]}; do
     rootFName=$HOME/.$(basename $f)
     if [[ -e "$rootFName" ]]; then
       info "BACKUP pre-existing $rootFName"
