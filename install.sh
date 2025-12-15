@@ -194,12 +194,13 @@ dotfile_backup() {
   info "Backing up existing dotfiles... to $BACKUP_DIR"
 
   files=$(find "$DOTS" -type f -depth 1)
-  for f in ${files[@]}; do
-    if [[ -e "$HOME/.$f" ]]; then
-      info "BACKUP pre-existing $f"
-      run "mv -v \"$HOME/.$f\" \"$BACKUP_DIR/\""
+  for f in "${files[@]}"; do
+    rootFName=$HOME/.$(basename $f)
+    if [[ -e "$rootFName" ]]; then
+      info "BACKUP pre-existing $rootFName"
+      run "mv -v \"$rootFName\" \"$BACKUP_DIR/\""
     else
-      info "NO pre-existing $f"
+      info "NO pre-existing $rootFName"
     fi
   done
 }
@@ -267,7 +268,7 @@ rcm_setup() {
     error "RCM up did not link dotfiles."
   else
     ok "Dotfiles installed"
-    lsrc -D "$DOTS"
+    lsrc -d "$DOTS"
   fi
 }
 
