@@ -166,4 +166,3 @@ export LS_COLORS="$(vivid generate molokai)"
 # export OPENAI_API_KEY=$(op read op://Shumaker-Shared/OpenAI/OPENAI_API_KEY --no-newline)
 
 source <(op completion bash)
-. "$HOME/.cargo/env"

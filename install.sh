@@ -233,15 +233,21 @@ formula_install() {
 # ---------------- Brew Bundle ----------------
 safe_brew_bundle() {
   local brewfile="$1"
-  local logfile="/tmp/brew-bundle.log"
+  logfile="/tmp/brew-bundle.log"
 
   info "Running brew bundle using ${brewfile}…"
 
-  # Brew bundle returns non-zero only on a real failure
-  if ! brew bundle --upgrade --file="${brewfile}" >"${logfile}" 2>&1; then
-    echo "--- /tmp/brew-bundle.log ---" >&2
-    tail -n 80 "${logfile}" >&2 || true
-    error "brew bundle failed. See ${logfile}"
+  set +e # we will handle errors manually
+
+  brew bundle --upgrade --file="${brewfile}" 2>&1 |
+    tee "${logfile}"
+
+  status=${PIPESTATUS[0]}
+
+  set -e
+
+  if [[ $status -ne 0 ]]; then
+    error "brew bundle failed (exit code ${status}). See ${logfile}"
   fi
 
   ok "Brew bundle finished successfully"
