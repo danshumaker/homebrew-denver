@@ -86,6 +86,25 @@ bundle_cleanup() {
   fi
 }
 
+bundle_remove() {
+
+  info "Uninstalling Homebrew formulas from Brewfile..."
+
+  if [[ -f "$BREWFILE" ]]; then
+    brew bundle list --file "$BREWFILE" --formula |
+      xargs brew uninstall --ignore-dependencies || true
+
+    brew bundle list --file "$BREWFILE" --cask |
+      xargs brew uninstall --cask --force || true
+
+    brew autoremove
+    brew cleanup --prune=all
+  else
+    warn "Brewfile not found, skipping brew uninstall"
+  fi
+
+}
+
 # ---------------- Uninstall Rust -------------------
 un_rust() {
   if command -v rustup >/dev/null 2>&1; then
@@ -99,6 +118,7 @@ main() {
   un_dotfiles
   restore_old_dotfiles
   bundle_cleanup
+  bundle_remove
   un_rust
   ok "Denver Uninstallation Complete."
 }
