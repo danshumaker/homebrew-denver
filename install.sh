@@ -311,8 +311,8 @@ main() {
   homebrew_install
   denver_install
   dotfile_backup
-  change_shell
   bundle_install
+  change_shell
   php_install
   rcm_setup
 
