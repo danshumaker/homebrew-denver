@@ -1,7 +1,7 @@
 # Denver - Developer Environment Manager
 
 - Hide `gh repo edit --visibility private --accept-visibility-change-consequences`
-- Unhide `gh repo edit --visibility public`
+- Unhide `gh repo edit --visibility public --accept-visibility-change-consequences`
 
 <p align="center">
 
