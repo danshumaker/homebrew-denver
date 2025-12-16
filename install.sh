@@ -257,6 +257,13 @@ safe_brew_bundle() {
 bundle_install() {
   info "Running brew bundle..."
   safe_brew_bundle "$BREWFILE"
+  # ---------------- Verify Installation Success ----------------
+  DENVER_PREFIX="$(brew --prefix denver || true)"
+  PAYLOAD_DIR="$DENVER_PREFIX/share/denver"
+  BREWFILE=$PAYLOAD_DIR/Brewfile
+  DOTS=$PAYLOAD_DIR/dotfiles
+  BACKUP_DIR="$HOME/.old_dots/backup_$(date +%Y%m%d_%H%M%S)"
+
 }
 
 # ---------------- PHP Install --------------------
@@ -309,9 +316,9 @@ font_install() {
 main() {
   xcode_install
   homebrew_install
-  denver_install
-  dotfile_backup
+  #denver_install
   bundle_install
+  dotfile_backup
   change_shell
   rust_install
   php_install

@@ -1,3 +1,4 @@
+tap "danshumaker/denver"
 tap "dart-lang/dart"
 tap "mutagen-io/mutagen"
 tap "pantheon-systems/external"
@@ -43,6 +44,8 @@ brew "choose-gui"
 brew "cmake"
 # High performance code minimap generator
 brew "code-minimap"
+# Container runtimes on MacOS (and Linux) with minimal setup
+brew "colima"
 # Generic library support script
 brew "libtool"
 # ODBC 3 connectivity for UNIX
@@ -163,6 +166,8 @@ brew "php-cs-fixer"
 brew "pstree"
 # Python version management
 brew "pyenv"
+# Generic machine emulator and virtualizer
+brew "qemu"
 # Ruby version manager
 brew "rbenv"
 # RC file (dotfile) management
@@ -195,6 +200,8 @@ brew "vnstat"
 brew "yamllint"
 # JavaScript package manager
 brew "yarn"
+# denver dotfiles payload for installation and uninstallation scripts
+brew "danshumaker/denver/denver"
 # Fast file synchronization and network forwarding for remote development
 brew "mutagen-io/mutagen/mutagen"
 # Terminus is Pantheon's Command-line Interface (CLI)

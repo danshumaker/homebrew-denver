@@ -1,8 +1,5 @@
 # Denver - Developer Environment Manager
 
-- Hide `gh repo edit --visibility private --accept-visibility-change-consequences`
-- Unhide `gh repo edit --visibility public --accept-visibility-change-consequences`
-
 <p align="center">
 
   <!-- Latest Version Tag -->
@@ -78,11 +75,16 @@ This keeps Homebrew happy while giving your installer script full control.
 
 ### Developer Notes
 
-Make repo private for the time being:
+- Hide `gh repo edit --visibility private --accept-visibility-change-consequences`
+- Unhide `gh repo edit --visibility public --accept-visibility-change-consequences`
+
+#### Bundle Updates
 
 ```bash
-gh repo edit --visibility private --accept-visibility-change-consequences
+brew bundle dump --describe --force --taps --brews --casks
 ```
+
+Make repo private for the time being:
 
 Useful commands during development:
 
