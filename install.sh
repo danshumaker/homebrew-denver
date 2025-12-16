@@ -313,6 +313,7 @@ main() {
   dotfile_backup
   bundle_install
   change_shell
+  rust_install
   php_install
   rcm_setup
 

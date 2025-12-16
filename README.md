@@ -1,5 +1,8 @@
 # Denver - Developer Environment Manager
 
+- Hide `gh repo edit --visibility private --accept-visibility-change-consequences`
+- Unhide `gh repo edit --visibility public`
+
 <p align="center">
 
   <!-- Latest Version Tag -->
@@ -73,14 +76,12 @@ This keeps Homebrew happy while giving your installer script full control.
 - All system changes are reversible.
 - Backups protect all user-modified dotfiles before linking.
 
----
-
 ### Developer Notes
 
 Make repo private for the time being:
 
 ```bash
-gh repo edit --visibility private --
+gh repo edit --visibility private --accept-visibility-change-consequences
 ```
 
 Useful commands during development:
@@ -101,7 +102,8 @@ brew --prefix denver
 
 #### Dry-run Mode (safe preview)
 
-You can simulate the entire installation without touching your system:
+You can simulate the entire installation without touching your system.
+Dry-run prints each command instead of executing it
 
 ```bash
 /bin/bash install.sh --dry-run
@@ -113,18 +115,13 @@ or
 /bin/bash install.sh -n
 ```
 
-Dry-run prints each command instead of executing it
----
-
 #### License
 
 MIT License — Do whatever you want, just don’t blame me.
 
----
-
 ##### TODO
 
-- denver.py script: Show list of NON-tracked dot files with explainations why they are not tracked.
+- denver.py script: Show list of NON-tracked dot files with explanations why they are not tracked.
 - install.sh :    Authentication runs/fixes/settings
   - npm token
   - gh token and Authentication
