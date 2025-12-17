@@ -41,7 +41,7 @@
 - Dry-run mode (just output with no execution)
 - Dotfile backup into .old_dots/ BEFORE installation
 
-### Instal & Uninstall
+### Install & Uninstall
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/install.sh)"
