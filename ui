@@ -95,10 +95,14 @@ for ((j = 0; j < argc; j++)); do
       exit
       ;;
     -i)
+      unhide
       install
+      hide
       ;;
     -u)
+      unhide
       uninstall
+      hide
       ;;
     --priv)
       hide
