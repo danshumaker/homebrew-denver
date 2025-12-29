@@ -17,6 +17,7 @@ function help() {
     -h|--help   (print help)
     --priv      (make repo private)
     --pub       (make repo public)
+    --upgrade   (make public , upgrade, make private)
     -v          (turn on verbose debugging)
 
     Usage:
@@ -104,6 +105,11 @@ for ((j = 0; j < argc; j++)); do
       ;;
     --pub)
       unhide
+      ;;
+    --upgrade)
+      unhide
+      brew upgrade denver
+      hide
       ;;
     *)
       pp "%s" RED "Invalid Option ${argv[j]}"
