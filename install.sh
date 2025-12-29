@@ -308,6 +308,7 @@ font_install() {
 }
 
 main() {
+  cd $HOME
   xcode_install
   homebrew_install
   denver_install
