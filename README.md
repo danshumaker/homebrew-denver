@@ -117,9 +117,27 @@ or
 /bin/bash install.sh -n
 ```
 
-#### License
+### Upgrades & Maintenance
 
-MIT License — Do whatever you want, just don’t blame me.
+Bash tool ui has help and options for repo maintenance.
+
+```bash
+ui
+
+    -i          (install denver)
+    -u          (uninstall denver)
+    -h|--help   (print help)
+    --priv      (make repo private)
+    --pub       (make repo public)
+    --upgrade   (make public , upgrade, make private)
+    -v          (turn on verbose debugging)
+
+    Usage:
+
+       ui -v -h
+
+
+```
 
 ##### TODO
 
@@ -130,3 +148,7 @@ MIT License — Do whatever you want, just don’t blame me.
   - 1pass-cli setup
 - Linux & Windows suport
 - release to public (make user agnostic)
+
+#### License
+
+MIT License — Do whatever you want, just don’t blame me.
