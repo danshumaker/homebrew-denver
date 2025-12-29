@@ -47,8 +47,15 @@ jobs:
         run: |
           VERSION="${{ steps.vars.outputs.version }}"
           SHA="${{ steps.sha.outputs.sha256 }}"
+          rm -f source.tar.gz
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
+          git diff -- Formula/denver.rb || true
           git add Formula/denver.rb
+          # If nothing is staged, stop cleanly.
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
           git commit -m "GitHub-Actions: Auto-update formula for version $VERSION with $SHA"
           git push origin main
