@@ -72,9 +72,9 @@ wait_for_user() {
 # ---------------- Detect OS -------------------
 OS="$(uname -s)"
 case "$OS" in
-  Darwin) PLATFORM="macos" ;;
-  Linux) PLATFORM="linux" ;;
-  *) error "Unsupported OS: $OS" ;;
+Darwin) PLATFORM="macos" ;;
+Linux) PLATFORM="linux" ;;
+*) error "Unsupported OS: $OS" ;;
 esac
 info "Platform: $PLATFORM"
 
@@ -186,24 +186,6 @@ denver_install() {
   #run "rm -rf ~/Library/Caches/Homebrew/downloads/*"
 }
 
-# ---------------- Backup dotfiles ----------------
-dotfile_backup() {
-  run "mkdir -p \"$BACKUP_DIR\""
-
-  info "Backing up existing dotfiles... to $BACKUP_DIR"
-
-  files=$(find "$DOTS" -type f -depth 1)
-  for f in ${files[@]}; do
-    rootFName=$HOME/.$(basename $f)
-    if [[ -e "$rootFName" ]]; then
-      info "BACKUP pre-existing $rootFName"
-      run "mv -v \"$rootFName\" \"$BACKUP_DIR/\""
-    else
-      info "NO pre-existing $rootFName"
-    fi
-  done
-}
-
 # ---------------- Safe Brew Install Wrapper ----------------
 formula_install() {
   local formula="$1"
@@ -265,11 +247,32 @@ php_install() {
   formula_install php
 }
 
+# ---------------- Backup dotfiles ----------------
+dotfile_backup() {
+  run "mkdir -p \"$BACKUP_DIR\""
+
+  info "Backing up existing dotfiles... to $BACKUP_DIR"
+
+  files=$(find "$DOTS" -type f -depth 1)
+  for f in ${files[@]}; do
+    rootFName=$HOME/.$(basename $f)
+    if [[ -e "$rootFName" ]]; then
+      if [[ -L "$rootFName" ]]; then
+        # If it's a link then do NOT back it up but remove it so new links can be made
+        run "rm -v \"$rootFName\""
+      else
+        run "mv -v \"$rootFName\" \"$BACKUP_DIR/\""
+      fi
+    fi
+  done
+}
+
 # ---------------- RCM deployment ----------------
 rcm_setup() {
   info "Running rcup..."
+  cd $HOME
   run "ln -s \"$DOTS\"/rcrc $HOME/.rcrc"
-  run "rcup -d \"$DOTS\""
+  run "rcup -v -d \"$DOTS\""
   if [[ ! -L $HOME/.bash_profile ]]; then
     error "RCM up did not link dotfiles."
   else
