@@ -7,7 +7,10 @@ git fetch origin main --tags
 git rebase origin/main
 
 echo "$DATE" >VERSION
-gsed -i '' -E "s/^  version \".*\"$/  version \"${DATE}\"/" Formula/denver.rb
+
+SED="$(command -v gsed || command -v sed)"
+"$SED" -i.bak -e "s/^  version \".*\"$/  version \"${DATE}\"/" Formula/denver.rb
+rm -f Formula/denver.rb.bak
 
 git add VERSION Formula/denver.rb
 
