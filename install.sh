@@ -149,8 +149,7 @@ denver_install() {
   run "brew update"
   info "Tapping danshumaker/denver..."
   run "brew tap danshumaker/denver"
-  run "brew upgrade"
-
+  run "brew upgrade denver || (brew update && brew upgrade denver)"
   info "Installing Denver formula..."
 
   if ! run "brew install denver"; then
