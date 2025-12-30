@@ -8,7 +8,8 @@ class Denver < Formula
 
   def install
     # Install only dotfiles
-    pkgshare.install "dotfiles" "Brewfile"
+    pkgshare.install "dotfiles" 
+    pkgshare.install "Brewfile" if File.exist?("Brewfile")
   end
 
   def caveats
