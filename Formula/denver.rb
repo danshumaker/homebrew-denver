@@ -3,7 +3,7 @@ class Denver < Formula
   homepage "https://github.com/danshumaker/homebrew-denver"
   version "2025-12-30_17_07_24"
   url "https://codeload.github.com/danshumaker/homebrew-denver/tar.gz/#{version}"
-  sha256 "641c7958ec6daf36e67000f46c8aa3a03ccd8e166afae1b5a721211cadd182cd"
+  sha256 "80dbf8db302bcf3655cdd1bd52b049dcd46ae902301067faa5880a8d93630282"
   license "MIT"
 
   def install
