@@ -22,13 +22,25 @@ jobs:
           VERSION="${GITHUB_REF#refs/tags/}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Download GitHub-generated tarball
+      - name: Download tag tarball (retry until available)
         run: |
           VERSION="${{ steps.vars.outputs.version }}"
           URL="https://codeload.github.com/danshumaker/homebrew-denver/tar.gz/${VERSION}"
           git ls-remote --tags origin "refs/tags/${VERSION}" | grep -q "${VERSION}" || { echo "Tag ${VERSION} not found in this repo"; exit 1; }
-          echo "Fetching: $URL"
-          curl -fsSL "$URL" -o source.tar.gz
+          echo "Fetching (with retry): $URL"
+
+          # retry up to ~60s total
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            if curl -fsSL "$URL" -o source.tar.gz; then
+              echo "Downloaded tarball on attempt $i"
+              exit 0
+            fi
+            echo "Tarball not ready yet (attempt $i). Sleeping 5s..."
+            sleep 5
+          done
+
+          echo "Tarball still 404 after retries: $URL" >&2
+          exit 1
 
       - name: Compute SHA256
         id: sha
