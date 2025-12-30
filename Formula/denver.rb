@@ -7,14 +7,13 @@ class Denver < Formula
   license "MIT"
 
   def install
-    # Install everything into pkgshare except the Formula directory itself
-    payload = Dir["*"] - ["Formula"]
-    pkgshare.install payload
+    # Install only dotfiles
+    pkgshare.install "dotfiles" "Brewfile"
   end
 
   def caveats
     <<~EOS
-      The denver payload has been installed into:
+      The denver dotfiles have been installed into:
         #{pkgshare}
 
       To install denver fully:
