@@ -26,8 +26,7 @@ jobs:
         run: |
           VERSION="${{ steps.vars.outputs.version }}"
           URL="https://codeload.github.com/danshumaker/homebrew-denver/tar.gz/${VERSION}"
-          git ls-remote --tags origin "refs/tags/${VERSION}" | grep -q "${VERSION}" \
-  || { echo "Tag ${VERSION} not found in this repo"; exit 1; }
+          git ls-remote --tags origin "refs/tags/${VERSION}" | grep -q "${VERSION}" || { echo "Tag ${VERSION} not found in this repo"; exit 1; }
           echo "Fetching: $URL"
           curl -fsSL "$URL" -o source.tar.gz
 
