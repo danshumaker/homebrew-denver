@@ -1,4 +1,3 @@
-tap "danshumaker/denver"
 tap "dart-lang/dart"
 tap "mutagen-io/mutagen"
 tap "pantheon-systems/external"
@@ -200,8 +199,6 @@ brew "vnstat"
 brew "yamllint"
 # JavaScript package manager
 brew "yarn"
-# denver dotfiles payload for installation and uninstallation scripts
-brew "danshumaker/denver/denver"
 # Fast file synchronization and network forwarding for remote development
 brew "mutagen-io/mutagen/mutagen"
 # Terminus is Pantheon's Command-line Interface (CLI)
