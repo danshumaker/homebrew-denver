@@ -40,6 +40,9 @@ run() {
   if [[ $DRY -eq 1 ]]; then
     echo "DRYRUN: $*"
   else
+    ring_bell
+    echo "::RUN:: $@   ???"
+    wait_for_user
     eval "$@"
   fi
 }
@@ -151,12 +154,12 @@ denver_install() {
   info "Tapping danshumaker/denver..."
   run "brew tap danshumaker/denver"
   if brew list --formula denver >/dev/null 2>&1; then
-     echo "Denver is installed, attempting update & upgrade"
-     run "brew upgrade denver || (brew update && brew upgrade denver)"
+    echo "Denver is installed, attempting update & upgrade"
+    run "brew upgrade denver || (brew update && brew upgrade denver)"
   else
-     echo "denver is NOT installed"
-	  info "Installing Denver formula..."
-	  run "brew install denver"
+    echo "denver is NOT installed"
+    info "Installing Denver formula..."
+    run "brew install denver"
   fi
 
   # ---------------- Verify Installation Success ----------------
