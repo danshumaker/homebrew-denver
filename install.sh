@@ -151,10 +151,7 @@ denver_install() {
   run "brew tap danshumaker/denver"
   run "brew upgrade denver || (brew update && brew upgrade denver)"
   info "Installing Denver formula..."
-
-  #if ! run "brew install denver"; then
-  #  error "Homebrew failed to install 'denver'. Aborting."
-  #fi
+  run "brew install denver"
 
   # ---------------- Verify Installation Success ----------------
   DENVER_PREFIX="$(brew --prefix denver || true)"
@@ -319,7 +316,7 @@ main() {
   change_shell
   rust_install
   php_install
-  #rcm_setup
+  rcm_setup
 
   ok "Denver installation complete."
   warn "CONFIGURATION LEFT TODO"
