@@ -1,7 +1,7 @@
 class Denver < Formula
   desc "denver dotfiles payload for installation and uninstallation scripts"
   homepage "https://github.com/danshumaker/homebrew-denver"
-  version "2025-12-30_20_03_02"
+  version "2025-12-30_20_25_21"
   url "https://codeload.github.com/danshumaker/homebrew-denver/tar.gz/#{version}"
   sha256 "990a305ae0dabea5ed67e2d0b6e77891e4024aef698cef94af97b16ce3fd5882"
   license "MIT"
