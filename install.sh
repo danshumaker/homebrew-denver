@@ -152,9 +152,9 @@ denver_install() {
   run "brew upgrade denver || (brew update && brew upgrade denver)"
   info "Installing Denver formula..."
 
-  if ! run "brew install denver"; then
-    error "Homebrew failed to install 'denver'. Aborting."
-  fi
+  #if ! run "brew install denver"; then
+  #  error "Homebrew failed to install 'denver'. Aborting."
+  #fi
 
   # ---------------- Verify Installation Success ----------------
   DENVER_PREFIX="$(brew --prefix denver || true)"
