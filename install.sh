@@ -150,9 +150,16 @@ denver_install() {
   run "brew update"
   info "Tapping danshumaker/denver..."
   run "brew tap danshumaker/denver"
-  #run "brew upgrade denver || (brew update && brew upgrade denver)"
-  info "Installing Denver formula..."
-  run "brew install denver"
+  if brew list --formula denver >/dev/null 2>&1; then
+     echo "denver is installed"
+     if [[ ! run "brew upgrade denver || (brew update && brew upgrade denver)" ]]; then
+	info "Can't upgrade if it's not installed... skipping update and upgrade."
+     fi
+  else
+     echo "denver is NOT installed"
+	  info "Installing Denver formula..."
+	  run "brew install denver"
+  fi
 
   # ---------------- Verify Installation Success ----------------
   DENVER_PREFIX="$(brew --prefix denver || true)"
