@@ -2,6 +2,7 @@
 # Denver Install ( https://github.com/danshumaker/homebrew-denver )
 set -euo pipefail
 
+set -xv
 # ---------------- Color Support ----------------
 if test -t 1 && command -v tput >/dev/null 2>&1; then
   BLUE=$(tput setaf 4)
