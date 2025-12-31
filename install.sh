@@ -72,9 +72,9 @@ wait_for_user() {
 # ---------------- Detect OS -------------------
 OS="$(uname -s)"
 case "$OS" in
-Darwin) PLATFORM="macos" ;;
-Linux) PLATFORM="linux" ;;
-*) error "Unsupported OS: $OS" ;;
+  Darwin) PLATFORM="macos" ;;
+  Linux) PLATFORM="linux" ;;
+  *) error "Unsupported OS: $OS" ;;
 esac
 info "Platform: $PLATFORM"
 
@@ -319,7 +319,7 @@ main() {
   change_shell
   rust_install
   php_install
-  rcm_setup
+  #rcm_setup
 
   ok "Denver installation complete."
   warn "CONFIGURATION LEFT TODO"
