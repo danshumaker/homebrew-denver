@@ -8,20 +8,8 @@ class Denver < Formula
 
   def install
     # Install only dotfiles
-    pkgshare.install "dotfiles" 
-    pkgshare.install "Brewfile" if File.exist?("Brewfile")
+    pkgshare.install "dotfiles"
+    pkgshare.install "Brewfile"
   end
 
-  def caveats
-    <<~EOS
-      The denver dotfiles have been installed into:
-        #{pkgshare}
-
-      To install denver fully:
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/install.sh)"
-
-      To uninstall denver:
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/uninstall.sh)"
-    EOS
-  end
 end

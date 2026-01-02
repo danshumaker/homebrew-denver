@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Author: authorName
-# Date: 2025-12-17
+# Author: Dan Shumaker
+# Date: 2025-12-31
 # vim: ft=bash:
 
 # Set script name based on file name.
@@ -10,21 +10,54 @@ _whereami=$(dirname "$0")
 # HEREDOCS + READ HELP FUNCTION
 function help() {
   read -r -d '' HELP <<-START
-    $_whoami
+    $_whoami  Installer for Developer Environment Manager (Denver)
 
-    -i          (install denver)
-    -u          (uninstall denver)
-    -h|--help   (print help)
-    --priv      (make repo private)
-    --pub       (make repo public)
-    --upgrade   (make public , upgrade, make private)
-    -v          (turn on verbose debugging)
+    -h help        (print help)
+    -v             (turn on verbose debugging)
+    -u|--uninstall (uninstall everything or specified asset)
+    --priv         (make repo private)
+    --pub          (make repo public)
+    -d|--dry-run   (dry run - do nothing but echo commands)
+    -p|--prompt    (prompt before each command and wait for input)
+
+    ASSETS
+    --xcode        (install xcode only)
+    --brew         (install homebrew)
+    --denver       (install denver)
+    --bundle       (bundle install)
+    --backup       (backup dotfiles)
+    --shell        (change shell)
+    --rust         (install rust)
+    --php          (install php)
+    --dots         (rcm dotfile setup)
+    --font         (install fonts)
 
     Usage:
 
-       $_whoami -v -h
+       $_whoami
+
+       Without any arguments everything is installed without a prompt and with colored output.
 
     Requirements/Dependencies:
+    - The repo is unlocked and public
+    - curl
+    - 1password (op authenticated)
+    - gh (github tool authenticated)
+
+    ✓ Kitty shell usage - setup verified
+    ✓ Fonts Installed - (used nerd-font forumlas instead - possible powerline fonts install git clone https://github.com/powerline/fonts
+
+    TODO:
+     - Store Github token in 1pass
+     - Convert to using GITHUB_TOKEN https://dev.to/jhot/homebrew-and-private-github-repositories-1dfh?utm_source=chatgpt.com"
+     - Consolidate ui into install and uninstall into ui.
+     - Configure 1Pass-cli .config/op/config
+     - ^S^I in Tmux to picup installed plugins
+     - .config/gh github authentication
+     - configure .ssh do ssh-keygen but also convert to 1Pass-OP
+     - Ensure docksal, colima, and terminus work
+     - Ensure node and hugo work in resume theme
+     - Ensure shutrail standsup
 
 START
 
@@ -60,9 +93,62 @@ function pp() {
   printf $1 "${colors[$2]}${styles[$3]}$printable${styles[NORMAL]}"
 }
 
+declare -i PROMPT=0
+declare -i DRY=0
+declare -i UNINSTALL=0
+
 # Capture Arguements
 argc=$#   # total args
 argv=($@) # array of args
+
+# Process CLI Settings
+# - Go through the boolean only args and remove them so that They
+#   do not confuse the command line options processing below.
+for ((j = 0; j < argc; j++)); do
+  case ${argv[j]} in
+    -p | --prompt)
+      PROMPT=1
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+      argc=$(($argc - 1)) # two subtracted
+      # Integer variable decrement - only decrement j because argc and argv
+      # have been adjusted
+      ((j--))
+      ;;
+    -d | --dry-run)
+      DRY=1
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+      argc=$(($argc - 1))
+      ((j--))
+      ;;
+    -v)
+      # Boolean Arguement
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+
+      # Remove the arguement from the list of args
+      argc=$(($argc - 1)) # decrement by 1
+      ((j--))
+      set -v
+      set -x
+      ;;
+    -u | --uninstall)
+      UNINSTALL=1
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+      argc=$(($argc - 1)) # two subtracted
+      # Integer variable decrement - only decrement j because argc and argv
+      # have been adjusted
+      ((j--))
+      ;;
+  esac
+done
+
+info() { pp "%s\n" CYAN NORMAL "[INFO] $*"; }
+warn() { pp "%s\n" YELLOW BRIGHT "[WARN] $*"; }
+ok() { pp "%s\n" GREEN BRIGHT "[SUCCESS] $*"; }
+
+error() {
+  pp "%s\n" RED BRIGHT "[ERROR] $*"
+  exit 1
+}
 
 hide() {
   gh repo edit --visibility private --accept-visibility-change-consequences
@@ -73,43 +159,348 @@ unhide() {
 
 }
 
-install() {
-
-  unhide
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/install.sh)"
-  hide
+run() {
+  if (($DRY)); then
+    echo "DRYRUN: $*"
+  else
+    if (($PROMPT)); then
+      ring_bell
+      echo "::RUN:: $@   ???"
+      wait_for_user
+      eval "$@"
+    else
+      eval "$@"
+    fi
+  fi
 }
-uninstall() {
 
-  unhide
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/uninstall.sh)"
-  hide
+getc() {
+  local save_state
+  save_state="$(/bin/stty -g)"
+  /bin/stty raw -echo
+  IFS='' read -r -n 1 -d '' "$@"
+  /bin/stty "${save_state}"
 }
 
+ring_bell() {
+  # Use the shell's audible bell.
+  if [[ -t 1 ]]; then
+    printf "\a"
+  fi
+}
+
+wait_for_user() {
+  local c
+  warn "Press RETURN/ENTER to continue or any other key to abort:"
+  getc c
+  # we test for \r and \n because some stuff does \r instead
+  if ! [[ "${c}" == $'\r' || "${c}" == $'\n' ]]; then
+    exit 1
+  fi
+}
+
+# ---------------- Detect OS -------------------
+OS="$(uname -s)"
+case "$OS" in
+  Darwin) PLATFORM="macos" ;;
+  Linux) PLATFORM="linux" ;;
+  *) error "Unsupported OS: $OS" ;;
+esac
+info "Platform: $PLATFORM"
+
+# ----------------- xCode Developer Tools -------
+xcode() {
+  if [[ "$PLATFORM" == "macos" ]]; then
+    if ! xcode-select -p >/dev/null 2>&1; then
+      if (($UNINSTALL)); then
+        ok "Xcode is not installed"
+      else
+        info "The Xcode Command Line Tools will be installed."
+        run "xcode-select --install"
+      fi
+    else
+      if (($UNINSTALL)); then
+        run "sudo rm -rf /Library/Developer/CommandLineTools"
+        ok "Xcode Command Line tools removed"
+      else
+        info "Xcode Command Line Tools are already installed."
+      fi
+    fi
+  fi
+}
+
+# ----------------- Change Zsh to Bash default shell -------
+change_shell() {
+  info "Auditing shell configuration..."
+
+  if [[ -z "${SHELL:-}" ]]; then
+    error "\$SHELL is not set."
+  fi
+
+  if [[ ! -x "$SHELL" ]]; then
+    error "\$SHELL points to a non-executable: $SHELL"
+  fi
+
+  if ! grep -qx "$SHELL" /etc/shells; then
+    warn "\$SHELL ($SHELL) is not listed in /etc/shells"
+  fi
+
+  if command -v brew >/dev/null 2>&1; then
+
+    info "Enforcing Homebrew bash as login shell..."
+
+    BREW_BASH="$(brew --prefix)/bin/bash"
+
+    if ! grep -qx "$BREW_BASH" /etc/shells; then
+      info "Registering Homebrew bash in /etc/shells"
+      echo "$BREW_BASH" | sudo tee -a /etc/shells >/dev/null
+    fi
+
+    if [[ "$SHELL" != "$BREW_BASH" ]]; then
+      info "Changing login shell to $BREW_BASH"
+      chsh -s "$BREW_BASH"
+      ok "Login shell updated. Log out/in required."
+    else
+      ok "Homebrew bash already set as login shell"
+    fi
+  fi
+
+}
+
+# ---------------- Homebrew Install --------------
+homebrew_install() {
+  if ! command -v brew >/dev/null 2>&1; then
+    info "Installing Homebrew..."
+    run 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+  else
+    info "Homebrew already installed."
+  fi
+
+  # Load brew shellenv
+  BREW_PREFIX="$(brew --prefix)"
+  run 'eval "$($BREW_PREFIX/bin/brew shellenv)"'
+}
+
+# ---------------- Tap + Install formula ----------
+denver_install() {
+  if brew list --formula denver >/dev/null 2>&1; then
+    echo "Denver is installed, attempting update & upgrade"
+    run "brew upgrade denver || (brew update && brew upgrade denver)"
+  else
+    echo "denver is NOT installed"
+    info "Tapping danshumaker/denver..."
+    run "brew tap danshumaker/denver"
+    info "Installing Denver formula..."
+    run "brew install denver"
+  fi
+
+  # ---------------- Verify Installation Success ----------------
+  DENVER_PREFIX="$(brew --prefix denver || true)"
+  PAYLOAD_DIR="$DENVER_PREFIX/share/denver"
+  BREWFILE=$PAYLOAD_DIR/Brewfile
+  DOTS=$PAYLOAD_DIR/dotfiles
+  BACKUP_DIR="$HOME/.old_dots/backup_$(date +%Y%m%d_%H%M%S)"
+
+  if [[ ! -d "$DENVER_PREFIX" ]]; then
+    error "Denver prefix not found at: $DENVER_PREFIX"
+  fi
+
+  if [[ ! -d "$PAYLOAD_DIR" ]]; then
+    error "Denver payload directory missing: $PAYLOAD_DIR"
+  fi
+
+  info "Denver payload detected at: $PAYLOAD_DIR"
+
+  # ---------------- Verify Brewfile Exists ----------------
+
+  if [[ ! -f "$BREWFILE" ]]; then
+    error "Brewfile missing at: $BREWFILE"
+  fi
+
+  # Update Homebrew and basic sanity
+  # brew update
+  # brew doctor || true
+  # run "brew cleanup -s"
+  # run "rm -rf ~/Library/Caches/Homebrew/downloads/*"
+}
+
+# ---------------- Safe Brew Install Wrapper ----------------
+formula_install() {
+  local formula="$1"
+  local logfile="/tmp/brew-install-${formula}.log"
+
+  info "Installing ${formula}…"
+
+  # Run brew install and capture all output.
+  # brew returns 0 even with warnings, so exit code is the only correct test.
+  if ! brew install "${formula}" >"${logfile}" 2>&1; then
+    error "Fatal error installing ${formula}. See ${logfile}"
+  fi
+
+  # Validation: Did Brew actually install it?
+  # brew list <formula> returns 1 if installation did NOT succeed.
+  if ! brew list "${formula}" >/dev/null 2>&1; then
+    warn "Brew did not register '${formula}' as installed."
+    warn "This typically means a post-install failure."
+    warn "See ${logfile}"
+    error "Installation of ${formula} is incomplete."
+  fi
+
+  ok "${formula} installed successfully (non-fatal Brew warnings ignored)"
+}
+
+# ---------------- Brew Bundle ----------------
+safe_brew_bundle() {
+  local brewfile="$1"
+  logfile="/tmp/brew-bundle.log"
+
+  info "Running brew bundle using ${brewfile}…"
+
+  set +e # we will handle errors manually
+
+  brew bundle --upgrade --file="${brewfile}" 2>&1 |
+    tee "${logfile}"
+
+  status=${PIPESTATUS[0]}
+
+  set -e
+
+  if [[ $status -ne 0 ]]; then
+    error "brew bundle failed (exit code ${status}). See ${logfile}"
+  fi
+
+  ok "Brew bundle finished successfully"
+}
+
+# ---------------- Brew bundle --------------------
+bundle_install() {
+  info "Running brew bundle..."
+  safe_brew_bundle "$BREWFILE"
+
+}
+
+# ---------------- PHP Install --------------------
+php_install() {
+  info "Safe PHP install..."
+  formula_install php
+}
+
+# ---------------- Backup dotfiles ----------------
+dotfile_backup() {
+  run "mkdir -p \"$BACKUP_DIR\""
+
+  info "Backing up existing dotfiles... to $BACKUP_DIR"
+
+  files=$(find "$DOTS" -type f -depth 1)
+  for f in ${files[@]}; do
+    rootFName=$HOME/.$(basename $f)
+    if [[ -e "$rootFName" ]]; then
+      if [[ -L "$rootFName" ]]; then
+        # If it's a link then do NOT back it up but remove it so new links can be made
+        run "rm -v \"$rootFName\""
+      else
+        run "mv -v \"$rootFName\" \"$BACKUP_DIR/\""
+      fi
+    fi
+  done
+}
+
+# ---------------- RCM deployment ----------------
+rcm_setup() {
+  info "Running rcup..."
+  cd $HOME
+  run "ln -s \"$DOTS\"/rcrc $HOME/.rcrc"
+  run "rcup -v -d \"$DOTS\""
+  if [[ ! -L $HOME/.bash_profile ]]; then
+    error "RCM up did not link dotfiles."
+  else
+    ok "Dotfiles installed"
+    lsrc -d "$DOTS"
+  fi
+}
+
+# ---------------- Install Rust --------------------
+rust_install() {
+  if ! command -v cargo >/dev/null 2>&1; then
+    info "Installing Rust/Cargo toolchain..."
+    run 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y'
+  else
+    info "Rust already installed."
+  fi
+}
+
+# ---------------- Install Fonts (macOS only) -------
+font_install() {
+  # even though some of these are in the brewfile, this command will install more if they are available.
+  #
+  if [[ "$PLATFORM" == "macos" ]]; then
+    # TODO: Possible install powerline fonts https://github.com/powerline/fonts.git
+    brew search '/font-.*-nerd-font/' | awk '{ print $1 }' | xargs brew install
+
+    #FONT_SRC="/Applications/Utilities/Terminal.app/Contents/Resources/Fonts"
+    #if [[ -d "$FONT_SRC" ]]; then
+    #  info "Installing Terminal fonts..."
+    #  run "sudo cp -R \"$FONT_SRC/.\" \"/Library/Fonts/\""
+    #else
+    #  warn "Terminal fonts not found at $FONT_SRC"
+    #fi
+  fi
+}
+
+cd $HOME
 # Process Commands
 for ((j = 0; j < argc; j++)); do
   case ${argv[j]} in
-    -h | --help)
+    -h)
       # Function call
       help
       exit
       ;;
-    -i)
-      install
+    --xcode)
+      xcode
+      exit
       ;;
-    -u)
-      uninstall
+    --brew)
+      homebrew_install
+      exit
+      ;;
+    --denver)
+      denver_install
+      exit
+      ;;
+    --bundle)
+      bundle_install
+      exit
+      ;;
+    --backup)
+      dotfile_backup
+      exit
+      ;;
+    --shell)
+      change_shell
+      exit
+      ;;
+    --rust)
+      rust_install
+      exit
+      ;;
+    --php)
+      php_install
+      exit
+      ;;
+    --font)
+      font_install
+      exit
+      ;;
+    --dots)
+      rcm_setup
+      exit
       ;;
     --priv)
       hide
       ;;
     --pub)
       unhide
-      ;;
-    --upgrade)
-      unhide
-      brew upgrade denver
-      hide
       ;;
     *)
       pp "%s" RED "Invalid Option ${argv[j]}"
@@ -118,3 +509,20 @@ for ((j = 0; j < argc; j++)); do
       ;;
   esac
 done
+
+main() {
+  xcode
+  homebrew_install
+  denver_install
+  bundle_install
+  dotfile_backup
+  change_shell
+  rust_install
+  php_install
+  rcm_setup
+
+  ok "Denver installation complete."
+
+}
+
+main
