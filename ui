@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Author: Dan Shumaker
 # Date: 2025-12-31
+#
+# Denver (Developer Environment Manager) Installer/Uninstaller
+#
 # vim: ft=bash:
 
 # Set script name based on file name.
@@ -19,18 +22,17 @@ function help() {
     --pub          (make repo public)
     -d|--dry-run   (dry run - do nothing but echo commands)
     -p|--prompt    (prompt before each command and wait for input)
+    --clean        (remove all of denver)
 
     ASSETS
     --xcode        (install xcode only)
     --brew         (install homebrew)
     --denver       (install denver)
     --bundle       (bundle install)
-    --backup       (backup dotfiles)
+    --dots         (dotfiles backup and linking)
     --shell        (change shell)
     --rust         (install rust)
     --php          (install php)
-    --dots         (rcm dotfile setup)
-    --font         (install fonts)
 
     Usage:
 
@@ -96,6 +98,15 @@ function pp() {
 declare -i PROMPT=0
 declare -i DRY=0
 declare -i UNINSTALL=0
+
+# ---------------- Detect OS -------------------
+OS="$(uname -s)"
+case "$OS" in
+  Darwin) PLATFORM="macos" ;;
+  Linux) PLATFORM="linux" ;;
+  *) error "Unsupported OS: $OS" ;;
+esac
+info "Platform: $PLATFORM"
 
 # Capture Arguements
 argc=$#   # total args
@@ -199,15 +210,6 @@ wait_for_user() {
   fi
 }
 
-# ---------------- Detect OS -------------------
-OS="$(uname -s)"
-case "$OS" in
-  Darwin) PLATFORM="macos" ;;
-  Linux) PLATFORM="linux" ;;
-  *) error "Unsupported OS: $OS" ;;
-esac
-info "Platform: $PLATFORM"
-
 # ----------------- xCode Developer Tools -------
 xcode() {
   if [[ "$PLATFORM" == "macos" ]]; then
@@ -215,7 +217,7 @@ xcode() {
       if (($UNINSTALL)); then
         ok "Xcode is not installed"
       else
-        info "The Xcode Command Line Tools will be installed."
+        info "Installing Xcode Command Line Tools"
         run "xcode-select --install"
       fi
     else
@@ -267,13 +269,23 @@ change_shell() {
 
 }
 
-# ---------------- Homebrew Install --------------
-homebrew_install() {
+# ---------------- Homebrew --------------
+homebrew() {
   if ! command -v brew >/dev/null 2>&1; then
-    info "Installing Homebrew..."
-    run 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    if (($UNINSTALL)); then
+      ok "Homebrew is not installed"
+    else
+      info "Installing Homebrew..."
+      run '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    fi
   else
-    info "Homebrew already installed."
+    if (($UNINSTALL)); then
+      info "Uninstalling Homebrew"
+      run '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"'
+      exit 0
+    else
+      info "Homebrew already installed."
+    fi
   fi
 
   # Load brew shellenv
@@ -282,16 +294,24 @@ homebrew_install() {
 }
 
 # ---------------- Tap + Install formula ----------
-denver_install() {
+denver() {
   if brew list --formula denver >/dev/null 2>&1; then
-    echo "Denver is installed, attempting update & upgrade"
-    run "brew upgrade denver || (brew update && brew upgrade denver)"
+    if (($UNINSTALL)); then
+      brew uninstall --zap --force denver 2>/dev/null || brew uninstall --force denver
+      rm -rf "$(brew --cellar)/denver"
+      rm -f "$(brew --prefix)/opt/denver"
+      brew cleanup -s denver || true
+      rm -f "$(brew --cache)"/denver--* 2>/dev/null || true
+    else
+      ok "Denver Installed"
+    fi
   else
-    echo "denver is NOT installed"
-    info "Tapping danshumaker/denver..."
-    run "brew tap danshumaker/denver"
-    info "Installing Denver formula..."
-    run "brew install denver"
+    if (($UNINSTALL)); then
+      ok "denver is NOT installed"
+    else
+      run "brew tap danshumaker/denver"
+      run "brew install denver"
+    fi
   fi
 
   # ---------------- Verify Installation Success ----------------
@@ -317,105 +337,121 @@ denver_install() {
     error "Brewfile missing at: $BREWFILE"
   fi
 
-  # Update Homebrew and basic sanity
-  # brew update
-  # brew doctor || true
-  # run "brew cleanup -s"
-  # run "rm -rf ~/Library/Caches/Homebrew/downloads/*"
-}
-
-# ---------------- Safe Brew Install Wrapper ----------------
-formula_install() {
-  local formula="$1"
-  local logfile="/tmp/brew-install-${formula}.log"
-
-  info "Installing ${formula}…"
-
-  # Run brew install and capture all output.
-  # brew returns 0 even with warnings, so exit code is the only correct test.
-  if ! brew install "${formula}" >"${logfile}" 2>&1; then
-    error "Fatal error installing ${formula}. See ${logfile}"
-  fi
-
-  # Validation: Did Brew actually install it?
-  # brew list <formula> returns 1 if installation did NOT succeed.
-  if ! brew list "${formula}" >/dev/null 2>&1; then
-    warn "Brew did not register '${formula}' as installed."
-    warn "This typically means a post-install failure."
-    warn "See ${logfile}"
-    error "Installation of ${formula} is incomplete."
-  fi
-
-  ok "${formula} installed successfully (non-fatal Brew warnings ignored)"
-}
-
-# ---------------- Brew Bundle ----------------
-safe_brew_bundle() {
-  local brewfile="$1"
-  logfile="/tmp/brew-bundle.log"
-
-  info "Running brew bundle using ${brewfile}…"
-
-  set +e # we will handle errors manually
-
-  brew bundle --upgrade --file="${brewfile}" 2>&1 |
-    tee "${logfile}"
-
-  status=${PIPESTATUS[0]}
-
-  set -e
-
-  if [[ $status -ne 0 ]]; then
-    error "brew bundle failed (exit code ${status}). See ${logfile}"
-  fi
-
-  ok "Brew bundle finished successfully"
 }
 
 # ---------------- Brew bundle --------------------
-bundle_install() {
-  info "Running brew bundle..."
-  safe_brew_bundle "$BREWFILE"
+bundle() {
+  if (($UNINSTALL)); then
+    info "Uninstalling Homebrew formulas from Denver Brewfile..."
+    # Locate Payload, check brew and denver dependencies
+    command -v brew >/dev/null 2>&1 || error "Homebrew not installed."
+    PREFIX="$(brew --prefix denver 2>/dev/null || true)"
+    [[ -d "$PREFIX" ]] || error "denver payload not found."
+    PAYLOAD="$PREFIX/share/denver"
+    BREWFILE="$PAYLOAD/Brewfile"
+
+    if [[ -f "$BREWFILE" ]]; then
+      brew bundle list --file "$BREWFILE" --formula |
+        xargs brew uninstall --ignore-dependencies || true
+
+      brew bundle list --file "$BREWFILE" --cask |
+        xargs brew uninstall --cask --force || true
+
+      brew autoremove
+      brew cleanup --prune=all
+    else
+      error "Denver Brewfile not found"
+    fi
+  else
+    logfile="/tmp/brew-bundle.log"
+    info "Running brew bundle using ${BREWFILE}…"
+    set +e # we will handle errors manually
+    brew bundle --upgrade --file="${BREWFILE}" 2>&1 | tee "${logfile}"
+    status=${PIPESTATUS[0]}
+    set -e
+    if [[ $status -ne 0 ]]; then
+      error "brew bundle failed (exit code ${status}). See ${logfile}"
+    fi
+    ok "Brew bundle finished successfully"
+  fi
 
 }
 
 # ---------------- PHP Install --------------------
 php_install() {
   info "Safe PHP install..."
-  formula_install php
+  local logfile="/tmp/brew-install-php.log"
+
+  info "Installing php…"
+
+  # Run brew install and capture all output.
+  # brew returns 0 even with warnings, so exit code is the only correct test.
+  if ! brew install php >"${logfile}" 2>&1; then
+    error "Fatal error installing php. See ${logfile}"
+  fi
+
+  # Validation: Did Brew actually install it?
+  # brew list <formula> returns 1 if installation did NOT succeed.
+  if ! brew list php >/dev/null 2>&1; then
+    warn "Brew did not register php as installed."
+    warn "This typically means a post-install failure."
+    warn "See ${logfile}"
+    error "Installation of php is incomplete."
+  fi
+
+  ok "php installed successfully (non-fatal Brew warnings ignored)"
 }
 
-# ---------------- Backup dotfiles ----------------
-dotfile_backup() {
-  run "mkdir -p \"$BACKUP_DIR\""
-
-  info "Backing up existing dotfiles... to $BACKUP_DIR"
-
-  files=$(find "$DOTS" -type f -depth 1)
-  for f in ${files[@]}; do
-    rootFName=$HOME/.$(basename $f)
-    if [[ -e "$rootFName" ]]; then
-      if [[ -L "$rootFName" ]]; then
-        # If it's a link then do NOT back it up but remove it so new links can be made
-        run "rm -v \"$rootFName\""
-      else
-        run "mv -v \"$rootFName\" \"$BACKUP_DIR/\""
-      fi
+# ---------------- Dotfile backup and Linking -------
+dotfiles() {
+  if (($UNINSTALL)); then
+    if command -v rcdn >/dev/null 2>&1; then
+      info "Removing Dotfile RCM symlinks..."
+      cd "$HOME"
+      run "rcdn -v -d \"$PAYLOAD\"/dotfiles"
+    else
+      warn "rcdn not found — cannot remove rcup symlinks."
     fi
-  done
-}
-
-# ---------------- RCM deployment ----------------
-rcm_setup() {
-  info "Running rcup..."
-  cd $HOME
-  run "ln -s \"$DOTS\"/rcrc $HOME/.rcrc"
-  run "rcup -v -d \"$DOTS\""
-  if [[ ! -L $HOME/.bash_profile ]]; then
-    error "RCM up did not link dotfiles."
+    if [[ -d "$HOME/.old_dots" ]]; then
+      LAST_BACKUP="$(ls -1dt "$HOME/.old_dots"/* 2>/dev/null | head -1)"
+      if [[ -d "$LAST_BACKUP" ]]; then
+        info "Restoring backup from $LAST_BACKUP"
+        run "cp -R \"$LAST_BACKUP/.\" \"$HOME/\""
+      else
+        warn "No backups found inside ~/.old_dots"
+      fi
+    else
+      warn "~/.old_dots does not exist; no backups to restore."
+    fi
   else
-    ok "Dotfiles installed"
-    lsrc -d "$DOTS"
+    # ---------------- Backup dotfiles ----------------
+    run "mkdir -p \"$BACKUP_DIR\""
+
+    info "Backing up existing dotfiles... to $BACKUP_DIR"
+
+    files=$(find "$DOTS" -type f -depth 1)
+    for f in ${files[@]}; do
+      rootFName=$HOME/.$(basename $f)
+      if [[ -e "$rootFName" ]]; then
+        if [[ -L "$rootFName" ]]; then
+          # If it's a link then do NOT back it up but remove it so new links can be made
+          run "rm -v \"$rootFName\""
+        else
+          run "mv -v \"$rootFName\" \"$BACKUP_DIR/\""
+        fi
+      fi
+    done
+
+    info "Running rcup..."
+    cd $HOME
+    run "ln -s \"$DOTS\"/rcrc $HOME/.rcrc"
+    run "rcup -v -d \"$DOTS\""
+    if [[ ! -L $HOME/.bash_profile ]]; then
+      error "RCM up did not link dotfiles."
+    else
+      ok "Dotfiles installed"
+      lsrc -d "$DOTS"
+    fi
   fi
 }
 
@@ -426,24 +462,6 @@ rust_install() {
     run 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y'
   else
     info "Rust already installed."
-  fi
-}
-
-# ---------------- Install Fonts (macOS only) -------
-font_install() {
-  # even though some of these are in the brewfile, this command will install more if they are available.
-  #
-  if [[ "$PLATFORM" == "macos" ]]; then
-    # TODO: Possible install powerline fonts https://github.com/powerline/fonts.git
-    brew search '/font-.*-nerd-font/' | awk '{ print $1 }' | xargs brew install
-
-    #FONT_SRC="/Applications/Utilities/Terminal.app/Contents/Resources/Fonts"
-    #if [[ -d "$FONT_SRC" ]]; then
-    #  info "Installing Terminal fonts..."
-    #  run "sudo cp -R \"$FONT_SRC/.\" \"/Library/Fonts/\""
-    #else
-    #  warn "Terminal fonts not found at $FONT_SRC"
-    #fi
   fi
 }
 
@@ -461,19 +479,15 @@ for ((j = 0; j < argc; j++)); do
       exit
       ;;
     --brew)
-      homebrew_install
+      homebrew
       exit
       ;;
     --denver)
-      denver_install
+      denver
       exit
       ;;
     --bundle)
-      bundle_install
-      exit
-      ;;
-    --backup)
-      dotfile_backup
+      bundle
       exit
       ;;
     --shell)
@@ -493,7 +507,7 @@ for ((j = 0; j < argc; j++)); do
       exit
       ;;
     --dots)
-      rcm_setup
+      dotfiles
       exit
       ;;
     --priv)
@@ -510,19 +524,24 @@ for ((j = 0; j < argc; j++)); do
   esac
 done
 
-main() {
+if (($UNINSTALL)); then
+  php_install
+  rust_install
+  change_shell
+  dotfiles
+  bundle
+  denver
+  homebrew
   xcode
-  homebrew_install
-  denver_install
-  bundle_install
-  dotfile_backup
+else
+  # INSTALL DEFAULT
+  xcode
+  homebrew
+  denver
+  bundle
+  dotfiles
   change_shell
   rust_install
   php_install
-  rcm_setup
-
   ok "Denver installation complete."
-
-}
-
-main
+fi

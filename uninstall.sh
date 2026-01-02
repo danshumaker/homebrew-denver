@@ -40,71 +40,6 @@ run() {
   fi
 }
 
-# ---------------- Locate Payload ----------------
-command -v brew >/dev/null 2>&1 || error "Homebrew not installed."
-
-PREFIX="$(brew --prefix denver 2>/dev/null || true)"
-[[ -d "$PREFIX" ]] || error "denver payload not found."
-
-PAYLOAD="$PREFIX/share/denver"
-BREWFILE="$PAYLOAD/Brewfile"
-
-# ---------------- Remove symlinks (rcdn) -----------
-un_dotfiles() {
-  if command -v rcdn >/dev/null 2>&1; then
-    info "Removing Dotfile RCM symlinks..."
-    cd "$HOME"
-    run "rcdn -v -d \"$PAYLOAD\"/dotfiles"
-  else
-    warn "rcdn not found — cannot remove rcup symlinks."
-  fi
-
-}
-
-# ---------------- Restore backups ------------------
-restore_old_dotfiles() {
-  if [[ -d "$HOME/.old_dots" ]]; then
-    LAST_BACKUP="$(ls -1dt "$HOME/.old_dots"/* 2>/dev/null | head -1)"
-    if [[ -d "$LAST_BACKUP" ]]; then
-      info "Restoring backup from $LAST_BACKUP"
-      run "cp -R \"$LAST_BACKUP/.\" \"$HOME/\""
-    else
-      warn "No backups found inside ~/.old_dots"
-    fi
-  else
-    warn "~/.old_dots does not exist; no backups to restore."
-  fi
-}
-
-# ---------------- Uninstall Brew packages ----------
-bundle_cleanup() {
-  if [[ -f "$BREWFILE" ]]; then
-    info "Removing Brewfile packages..."
-    run "brew bundle cleanup --file=\"$BREWFILE\" --force"
-  else
-    warn "Brewfile not found; skipping package removal."
-  fi
-}
-
-bundle_remove() {
-
-  info "Uninstalling Homebrew formulas from Brewfile..."
-
-  if [[ -f "$BREWFILE" ]]; then
-    brew bundle list --file "$BREWFILE" --formula |
-      xargs brew uninstall --ignore-dependencies || true
-
-    brew bundle list --file "$BREWFILE" --cask |
-      xargs brew uninstall --cask --force || true
-
-    brew autoremove
-    brew cleanup --prune=all
-  else
-    warn "Brewfile not found, skipping brew uninstall"
-  fi
-
-}
-
 # ---------------- Uninstall Rust -------------------
 un_rust() {
   if command -v rustup >/dev/null 2>&1; then
@@ -115,10 +50,6 @@ un_rust() {
 
 main() {
 
-  un_dotfiles
-  restore_old_dotfiles
-  #bundle_cleanup
-  bundle_remove
   un_rust
   ok "Denver Uninstallation Complete."
 }
