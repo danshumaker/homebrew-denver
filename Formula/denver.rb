@@ -7,7 +7,7 @@ class Denver < Formula
   license "MIT"
 
   def install
-    # Install only dotfiles
+    rm_rf pkgshare/"dotfiles"
     pkgshare.install "dotfiles"
     pkgshare.install "Brewfile"
   end
