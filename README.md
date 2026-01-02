@@ -43,13 +43,7 @@
 
 ### Install & Uninstall
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/install.sh)"
-```
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/danshumaker/homebrew-denver/main/uninstall.sh)"
-```
+NOTE: Transitioning to private repo and UI script for installation.
 
 ### Homebrew Formula Behavior
 
