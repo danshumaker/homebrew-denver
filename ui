@@ -32,7 +32,6 @@ function help() {
     --dots         (dotfiles backup and linking)
     --shell        (change shell)
     --rust         (install rust)
-    --php          (install php)
 
     Usage:
 
@@ -68,107 +67,29 @@ START
   echo ""
 }
 
-# Color terminal printing via associative arrays
-declare -A colors
-colors[BLACK]=$(tput setaf 0)
-colors[RED]=$(tput setaf 1)
-colors[GREEN]=$(tput setaf 2)
-colors[YELLOW]=$(tput setaf 3)
-colors[LIME_YELLOW]=$(tput setaf 190)
-colors[POWDER_BLUE]=$(tput setaf 153)
-colors[BLUE]=$(tput setaf 4)
-colors[MAGENTA]=$(tput setaf 5)
-colors[CYAN]=$(tput setaf 6)
-colors[WHITE]=$(tput setaf 7)
-declare -A styles
-styles[BRIGHT]=$(tput bold)
-styles[NORMAL]=$(tput sgr0)
-styles[BLINK]=$(tput blink)
-styles[REVERSE]=$(tput smso)
-styles[UNDERLINE]=$(tput smul)
+# ---------------- IO Colors ----------------
+if test -t 1 && command -v tput >/dev/null 2>&1; then
+  BLUE="$(tput setaf 4)"
+  YELLOW="$(tput setaf 3)"
+  RED="$(tput setaf 1)"
+  GREEN="$(tput setaf 2)"
+  RESET="$(tput sgr0)"
+else
+  BLUE=""
+  YELLOW=""
+  RED=""
+  GREEN=""
+  RESET=""
+fi
 
-# usage: format, color, style, string
-#   pp "%s" color bright "test this cyan color"
-function pp() {
-  ppargs=($@)
-  printable="${ppargs[@]:3}"
-  printf $1 "${colors[$2]}${styles[$3]}$printable${styles[NORMAL]}"
-}
-
-declare -i PROMPT=0
-declare -i DRY=0
-declare -i UNINSTALL=0
-
-# ---------------- Detect OS -------------------
-OS="$(uname -s)"
-case "$OS" in
-  Darwin) PLATFORM="macos" ;;
-  Linux) PLATFORM="linux" ;;
-  *) error "Unsupported OS: $OS" ;;
-esac
-info "Platform: $PLATFORM"
-
-# Capture Arguements
-argc=$#   # total args
-argv=($@) # array of args
-
-# Process CLI Settings
-# - Go through the boolean only args and remove them so that They
-#   do not confuse the command line options processing below.
-for ((j = 0; j < argc; j++)); do
-  case ${argv[j]} in
-    -p | --prompt)
-      PROMPT=1
-      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
-      argc=$(($argc - 1)) # two subtracted
-      # Integer variable decrement - only decrement j because argc and argv
-      # have been adjusted
-      ((j--))
-      ;;
-    -d | --dry-run)
-      DRY=1
-      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
-      argc=$(($argc - 1))
-      ((j--))
-      ;;
-    -v)
-      # Boolean Arguement
-      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
-
-      # Remove the arguement from the list of args
-      argc=$(($argc - 1)) # decrement by 1
-      ((j--))
-      set -v
-      set -x
-      ;;
-    -u | --uninstall)
-      UNINSTALL=1
-      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
-      argc=$(($argc - 1)) # two subtracted
-      # Integer variable decrement - only decrement j because argc and argv
-      # have been adjusted
-      ((j--))
-      ;;
-  esac
-done
-
-info() { pp "%s\n" CYAN NORMAL "[INFO] $*"; }
-warn() { pp "%s\n" YELLOW BRIGHT "[WARN] $*"; }
-ok() { pp "%s\n" GREEN BRIGHT "[SUCCESS] $*"; }
-
+# ---------------------- IO -------------------
+info() { printf "%s[INFO]%s %s\n" "$BLUE" "$RESET" "$*"; }
+warn() { printf "%s[WARN]%s %s\n" "$YELLOW" "$RESET" "$*"; }
 error() {
-  pp "%s\n" RED BRIGHT "[ERROR] $*"
+  printf "%s[ERROR]%s %s\n" "$RED" "$RESET" "$*"
   exit 1
 }
-
-hide() {
-  gh repo edit --visibility private --accept-visibility-change-consequences
-}
-
-unhide() {
-  gh repo edit --visibility public --accept-visibility-change-consequences
-
-}
+ok() { printf "%s[SUCCESS]%s %s\n" "$GREEN" "$RESET" "$*"; }
 
 run() {
   if (($DRY)); then
@@ -210,7 +131,73 @@ wait_for_user() {
   fi
 }
 
-# ----------------- xCode Developer Tools -------
+# ---------------------- repo -----------------
+hide() {
+  gh repo edit --visibility private --accept-visibility-change-consequences
+}
+
+unhide() {
+  gh repo edit --visibility public --accept-visibility-change-consequences
+
+}
+
+declare -i PROMPT=0
+declare -i DRY=0
+declare -i UNINSTALL=0
+
+# ---------------- Detect OS -------------------
+OS="$(uname -s)"
+case "$OS" in
+Darwin) PLATFORM="macos" ;;
+Linux) PLATFORM="linux" ;;
+*) error "Unsupported OS: $OS" ;;
+esac
+info "Platform: $PLATFORM"
+
+# Capture Arguements
+argc=$#   # total args
+argv=($@) # array of args
+
+# Process CLI Settings
+# - Go through the boolean only args and remove them so that They
+#   do not confuse the command line options processing below.
+for ((j = 0; j < argc; j++)); do
+  case ${argv[j]} in
+  -p | --prompt)
+    PROMPT=1
+    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+    argc=$(($argc - 1)) # two subtracted
+    # Integer variable decrement - only decrement j because argc and argv
+    # have been adjusted
+    ((j--))
+    ;;
+  -d | --dry-run)
+    DRY=1
+    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+    argc=$(($argc - 1))
+    ((j--))
+    ;;
+  -v)
+    # Boolean Arguement
+    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+
+    # Remove the arguement from the list of args
+    argc=$(($argc - 1)) # decrement by 1
+    ((j--))
+    set -v
+    set -x
+    ;;
+  -u | --uninstall)
+    UNINSTALL=1
+    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+    argc=$(($argc - 1)) # two subtracted
+    # Integer variable decrement - only decrement j because argc and argv
+    # have been adjusted
+    ((j--))
+    ;;
+  esac
+done
+
 xcode() {
   if [[ "$PLATFORM" == "macos" ]]; then
     if ! xcode-select -p >/dev/null 2>&1; then
@@ -232,7 +219,7 @@ xcode() {
 }
 
 # ----------------- Change Zsh to Bash default shell -------
-change_shell() {
+shell() {
   info "Auditing shell configuration..."
 
   if [[ -z "${SHELL:-}" ]]; then
@@ -243,27 +230,31 @@ change_shell() {
     error "\$SHELL points to a non-executable: $SHELL"
   fi
 
-  if ! grep -qx "$SHELL" /etc/shells; then
-    warn "\$SHELL ($SHELL) is not listed in /etc/shells"
-  fi
-
-  if command -v brew >/dev/null 2>&1; then
-
-    info "Enforcing Homebrew bash as login shell..."
-
-    BREW_BASH="$(brew --prefix)/bin/bash"
-
-    if ! grep -qx "$BREW_BASH" /etc/shells; then
-      info "Registering Homebrew bash in /etc/shells"
-      echo "$BREW_BASH" | sudo tee -a /etc/shells >/dev/null
+  if (($UNINSTALL)); then
+    chsh -s "/bin/zsh"
+  else
+    if ! grep -qx "$SHELL" /etc/shells; then
+      warn "\$SHELL ($SHELL) is not listed in /etc/shells"
     fi
 
-    if [[ "$SHELL" != "$BREW_BASH" ]]; then
-      info "Changing login shell to $BREW_BASH"
-      chsh -s "$BREW_BASH"
-      ok "Login shell updated. Log out/in required."
-    else
-      ok "Homebrew bash already set as login shell"
+    if command -v brew >/dev/null 2>&1; then
+
+      info "Enforcing Homebrew bash as login shell..."
+
+      BREW_BASH="$(brew --prefix)/bin/bash"
+
+      if ! grep -qx "$BREW_BASH" /etc/shells; then
+        info "Registering Homebrew bash in /etc/shells"
+        echo "$BREW_BASH" | sudo tee -a /etc/shells >/dev/null
+      fi
+
+      if [[ "$SHELL" != "$BREW_BASH" ]]; then
+        info "Changing login shell to $BREW_BASH"
+        chsh -s "$BREW_BASH"
+        ok "Login shell updated. Log out/in required."
+      else
+        ok "Homebrew bash already set as login shell"
+      fi
     fi
   fi
 
@@ -338,9 +329,9 @@ denver() {
     else
       run "brew tap danshumaker/denver"
       run "brew install denver"
+      payload
     fi
   fi
-  payload
 }
 
 # ---------------- Brew bundle --------------------
@@ -376,31 +367,6 @@ bundle() {
 
 }
 
-# ---------------- PHP Install --------------------
-php_install() {
-  info "Safe PHP install..."
-  local logfile="/tmp/brew-install-php.log"
-
-  info "Installing php…"
-
-  # Run brew install and capture all output.
-  # brew returns 0 even with warnings, so exit code is the only correct test.
-  if ! brew install php >"${logfile}" 2>&1; then
-    error "Fatal error installing php. See ${logfile}"
-  fi
-
-  # Validation: Did Brew actually install it?
-  # brew list <formula> returns 1 if installation did NOT succeed.
-  if ! brew list php >/dev/null 2>&1; then
-    warn "Brew did not register php as installed."
-    warn "This typically means a post-install failure."
-    warn "See ${logfile}"
-    error "Installation of php is incomplete."
-  fi
-
-  ok "php installed successfully (non-fatal Brew warnings ignored)"
-}
-
 # ---------------- Dotfile backup and Linking -------
 dotfiles() {
   payload
@@ -408,7 +374,7 @@ dotfiles() {
     if command -v rcdn >/dev/null 2>&1; then
       info "Removing Dotfile RCM symlinks..."
       cd "$HOME"
-      run "rcdn -v -d \"$PAYLOAD\"/dotfiles"
+      run "rcdn -v -d \"$DOTS\""
     else
       warn "rcdn not found — cannot remove rcup symlinks."
     fi
@@ -416,7 +382,7 @@ dotfiles() {
       LAST_BACKUP="$(ls -1dt "$HOME/.old_dots"/* 2>/dev/null | head -1)"
       if [[ -d "$LAST_BACKUP" ]]; then
         info "Restoring backup from $LAST_BACKUP"
-        run "cp -R \"$LAST_BACKUP/.\" \"$HOME/\""
+        run "cp -v -R \"$LAST_BACKUP/.\" \"$HOME/\""
       else
         warn "No backups found inside ~/.old_dots"
       fi
@@ -455,13 +421,24 @@ dotfiles() {
   fi
 }
 
-# ---------------- Install Rust --------------------
-rust_install() {
+# ---------------- Rust --------------------
+rust() {
   if ! command -v cargo >/dev/null 2>&1; then
-    info "Installing Rust/Cargo toolchain..."
-    run 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y'
+    if (($UNINSTALL)); then
+      info "Rust/Cargo Uninstalled"
+    else
+      info "Installing Rust/Cargo toolchain..."
+      run 'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y'
+    fi
   else
-    info "Rust already installed."
+    if (($UNINSTALL)); then
+      if command -v rustup >/dev/null 2>&1; then
+        info "Removing Rust toolchain..."
+        run "rustup self uninstall -y"
+      fi
+    else
+      info "Rust already installed."
+    fi
   fi
 }
 
@@ -469,65 +446,56 @@ cd $HOME
 # Process Commands
 for ((j = 0; j < argc; j++)); do
   case ${argv[j]} in
-    -h)
-      # Function call
-      help
-      exit
-      ;;
-    --xcode)
-      xcode
-      exit
-      ;;
-    --brew)
-      homebrew
-      exit
-      ;;
-    --denver)
-      denver
-      exit
-      ;;
-    --bundle)
-      bundle
-      exit
-      ;;
-    --shell)
-      change_shell
-      exit
-      ;;
-    --rust)
-      rust_install
-      exit
-      ;;
-    --php)
-      php_install
-      exit
-      ;;
-    --font)
-      font_install
-      exit
-      ;;
-    --dots)
-      dotfiles
-      exit
-      ;;
-    --priv)
-      hide
-      ;;
-    --pub)
-      unhide
-      ;;
-    *)
-      pp "%s" RED "Invalid Option ${argv[j]}"
-      help
-      exit
-      ;;
+  -h)
+    # Function call
+    help
+    exit
+    ;;
+  --xcode)
+    xcode
+    exit
+    ;;
+  --brew)
+    homebrew
+    exit
+    ;;
+  --denver)
+    denver
+    exit
+    ;;
+  --bundle)
+    bundle
+    exit
+    ;;
+  --shell)
+    shell
+    exit
+    ;;
+  --rust)
+    rust
+    exit
+    ;;
+  --dots)
+    dotfiles
+    exit
+    ;;
+  --priv)
+    hide
+    ;;
+  --pub)
+    unhide
+    ;;
+  *)
+    pp "%s" RED "Invalid Option ${argv[j]}"
+    help
+    exit
+    ;;
   esac
 done
 
 if (($UNINSTALL)); then
-  php_install
-  rust_install
-  change_shell
+  rust
+  shell
   dotfiles
   bundle
   denver
@@ -540,8 +508,7 @@ else
   denver
   bundle
   dotfiles
-  change_shell
-  rust_install
-  php_install
+  shell
+  rust
   ok "Denver installation complete."
 fi
