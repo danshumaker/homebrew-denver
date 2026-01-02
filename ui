@@ -290,30 +290,11 @@ homebrew() {
 
   # Load brew shellenv
   BREW_PREFIX="$(brew --prefix)"
-  run 'eval "$($BREW_PREFIX/bin/brew shellenv)"'
+  run 'eval "$(${BREW_PREFIX}/bin/brew shellenv)"'
 }
 
-# ---------------- Tap + Install formula ----------
-denver() {
-  if brew list --formula denver >/dev/null 2>&1; then
-    if (($UNINSTALL)); then
-      brew uninstall --zap --force denver 2>/dev/null || brew uninstall --force denver
-      rm -rf "$(brew --cellar)/denver"
-      rm -f "$(brew --prefix)/opt/denver"
-      brew cleanup -s denver || true
-      rm -f "$(brew --cache)"/denver--* 2>/dev/null || true
-    else
-      ok "Denver Installed"
-    fi
-  else
-    if (($UNINSTALL)); then
-      ok "denver is NOT installed"
-    else
-      run "brew tap danshumaker/denver"
-      run "brew install denver"
-    fi
-  fi
-
+payload() {
+  command -v brew >/dev/null 2>&1 || error "Homebrew not installed."
   # ---------------- Verify Installation Success ----------------
   DENVER_PREFIX="$(brew --prefix denver || true)"
   PAYLOAD_DIR="$DENVER_PREFIX/share/denver"
@@ -339,16 +320,34 @@ denver() {
 
 }
 
+# ---------------- Tap + Install formula ----------
+denver() {
+  if brew list --formula denver >/dev/null 2>&1; then
+    if (($UNINSTALL)); then
+      brew uninstall --zap --force denver 2>/dev/null || brew uninstall --force denver
+      rm -rf "$(brew --cellar)/denver"
+      rm -f "$(brew --prefix)/opt/denver"
+      brew cleanup -s denver || true
+      rm -f "$(brew --cache)"/denver--* 2>/dev/null || true
+    else
+      ok "Denver Installed"
+    fi
+  else
+    if (($UNINSTALL)); then
+      ok "denver is NOT installed"
+    else
+      run "brew tap danshumaker/denver"
+      run "brew install denver"
+    fi
+  fi
+  payload
+}
+
 # ---------------- Brew bundle --------------------
 bundle() {
   if (($UNINSTALL)); then
     info "Uninstalling Homebrew formulas from Denver Brewfile..."
-    # Locate Payload, check brew and denver dependencies
-    command -v brew >/dev/null 2>&1 || error "Homebrew not installed."
-    PREFIX="$(brew --prefix denver 2>/dev/null || true)"
-    [[ -d "$PREFIX" ]] || error "denver payload not found."
-    PAYLOAD="$PREFIX/share/denver"
-    BREWFILE="$PAYLOAD/Brewfile"
+    payload
 
     if [[ -f "$BREWFILE" ]]; then
       brew bundle list --file "$BREWFILE" --formula |
@@ -404,6 +403,7 @@ php_install() {
 
 # ---------------- Dotfile backup and Linking -------
 dotfiles() {
+  payload
   if (($UNINSTALL)); then
     if command -v rcdn >/dev/null 2>&1; then
       info "Removing Dotfile RCM symlinks..."
