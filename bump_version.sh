@@ -3,7 +3,6 @@ set -euo pipefail
 
 DATE=$(date "+%Y-%m-%d_%H_%M_%S")
 
-gh repo edit --visibility public --accept-visibility-change-consequences
 git fetch origin main --tags
 git rebase origin/main
 
