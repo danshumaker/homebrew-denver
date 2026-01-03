@@ -3,6 +3,8 @@ set -euo pipefail
 
 DATE=$(date "+%Y-%m-%d_%H_%M_%S")
 
+# Need it public so the homebrew github update-formula can run
+gh repo edit --visibility public --accept-visibility-change-consequences
 git fetch origin main --tags
 git rebase origin/main
 
