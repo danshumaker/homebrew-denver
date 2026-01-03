@@ -1,31 +1,12 @@
 # Denver - Developer Environment Manager
 
 <p align="center">
-
-  <!-- Latest Version Tag -->
-  <img alt="Version" src="https://img.shields.io/github/v/tag/danshumaker/homebrew-denver?label=version&color=blue">
-
-  <!-- Release Date -->
-  <img alt="Release Date" src="https://img.shields.io/github/release-date/danshumaker/homebrew-denver?color=blueviolet">
-
-  <!-- Build Status -->
-  <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/danshumaker/homebrew-denver/bump.yml?label=CI">
-
-  <!-- License -->
-  <img alt="License" src="https://img.shields.io/github/license/danshumaker/homebrew-denver">
-
-  <!-- GitHub Repo Size -->
-  <img alt="Repo Size" src="https://img.shields.io/github/repo-size/danshumaker/homebrew-denver">
-
-  <!-- Total Downloads -->
-  <img alt="Downloads" src="https://img.shields.io/github/downloads/danshumaker/homebrew-denver/total?color=brightgreen">
-
   <!-- Homebrew Formula Checker -->
   <img alt="Homebrew Formula" src="https://img.shields.io/badge/homebrew-tap-blue?logo=homebrew">
 
 </p>
 
-### New Machine Developer Setup
+### Intent/Purpose: New Machine Developer Setup
 
 - Denver is a dotfile and developer tool setup system initially designed for new user account setup.
 - It assumes that close to nothing is installed (not git, not Xcode, not node, etc)
@@ -35,30 +16,16 @@
 ### Features & Installations
 
 - Dotfiles managed by git(via homebrew) and setup by [RCM](https://github.com/thoughtbot/rcm)
-- Tools managed by [Homebrew](https://brew.sh/)
+- Tools managed by [Homebrew](https://brew.sh/) (Currently installs 131 tools via homebrew)
 - [Cargo](https://doc.rust-lang.org/cargo/index.html) The rust package manager
-- All Nerd Fonts (via homebrew)
+- All Nerd Fonts (via homebrew) - these make nvim and the terminal (and tmux) nicer.
 - Dry-run mode (just output with no execution)
 - Dotfile backup into .old_dots/ BEFORE installation
 
 ### Install & Uninstall
 
-NOTE: Transitioning to private repo and UI script for installation.
-
-### Homebrew Formula Behavior
-
-The formula:
-
-- **Does not** perform installation work
-- **Does not** modify `$HOME`
-- **Does not** call external scripts
-- **Only** installs payload files into:
-
-```
-$(brew --prefix denver)/share
-```
-
-This keeps Homebrew happy while giving your installer script full control.
+The ui script has all the options. You can install/uninstall individual assets or everything.
+See `ui -h` for all the help and options.
 
 ### Security Notes
 
@@ -67,81 +34,21 @@ This keeps Homebrew happy while giving your installer script full control.
 - All system changes are reversible.
 - Backups protect all user-modified dotfiles before linking.
 
-### Developer Notes
-
-- Hide `gh repo edit --visibility private --accept-visibility-change-consequences`
-- Unhide `gh repo edit --visibility public --accept-visibility-change-consequences`
-
 #### Bundle Updates
 
 ```bash
 brew bundle dump --describe --force --taps --brews --casks
 ```
 
-Make repo private for the time being:
-
-Useful commands during development:
-
-```bash
-brew uninstall denver
-brew untap danshumaker/denver
-brew tap --repair
-brew tap danshumaker/denver
-brew install denver
-```
-
-Print formula payload path:
-
-```bash
-brew --prefix denver
-```
-
-#### Dry-run Mode (safe preview)
-
-You can simulate the entire installation without touching your system.
-Dry-run prints each command instead of executing it
-
-```bash
-/bin/bash install.sh --dry-run
-```
-
-or
-
-```bash
-/bin/bash install.sh -n
-```
-
-### Upgrades & Maintenance
-
-Bash tool ui has help and options for repo maintenance.
-
-```bash
-ui
-
-    -i          (install denver)
-    -u          (uninstall denver)
-    -h|--help   (print help)
-    --priv      (make repo private)
-    --pub       (make repo public)
-    --upgrade   (make public , upgrade, make private)
-    -v          (turn on verbose debugging)
-
-    Usage:
-
-       ui -v -h
-
-
-```
+NOTE: If you update the Brewfile then make sure you take out the denver formula from it.
 
 ##### TODO
 
-- denver.py script: Show list of NON-tracked dot files with explanations why they are not tracked.
-- install.sh :    Authentication runs/fixes/settings
+- ui :    Authentication runs/fixes/settings
   - npm token
   - gh token and Authentication
   - 1pass-cli setup
-- Linux & Windows suport
-- release to public (make user agnostic)
+- Make private using github tokens.
 
 #### License
 

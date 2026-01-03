@@ -15,23 +15,22 @@ function help() {
   read -r -d '' HELP <<-START
     $_whoami  Installer for Developer Environment Manager (Denver)
 
-    -h help        (print help)
-    -v             (turn on verbose debugging)
-    -u|--uninstall (uninstall everything or specified asset)
-    --priv         (make repo private)
-    --pub          (make repo public)
-    -d|--dry-run   (dry run - do nothing but echo commands)
-    -p|--prompt    (prompt before each command and wait for input)
-    --clean        (remove all of denver)
+    -h|--help        (print help)
+    -v               (turn on verbose debugging)
+    -u|--uninstall   (uninstall everything or specified asset)
+    --priv|--private (make repo private)
+    --pub|--public   (make repo public)
+    -d|--dry-run     (dry run - do nothing but echo commands)
+    -p|--prompt      (prompt before each command and wait for input)
 
     ASSETS
-    --xcode        (install xcode only)
-    --brew         (install homebrew)
-    --denver       (install denver)
-    --bundle       (bundle install)
-    --dots         (dotfiles backup and linking)
-    --shell        (change shell)
-    --rust         (install rust)
+    --xcode          (install xcode only)
+    --brew           (install homebrew)
+    --denver         (install denver)
+    --bundle         (bundle install)
+    --dots           (dotfiles backup and linking)
+    --shell          (change shell)
+    --rust           (install rust)
 
     Usage:
 
@@ -148,9 +147,9 @@ declare -i UNINSTALL=0
 # ---------------- Detect OS -------------------
 OS="$(uname -s)"
 case "$OS" in
-Darwin) PLATFORM="macos" ;;
-Linux) PLATFORM="linux" ;;
-*) error "Unsupported OS: $OS" ;;
+  Darwin) PLATFORM="macos" ;;
+  Linux) PLATFORM="linux" ;;
+  *) error "Unsupported OS: $OS" ;;
 esac
 info "Platform: $PLATFORM"
 
@@ -163,38 +162,38 @@ argv=($@) # array of args
 #   do not confuse the command line options processing below.
 for ((j = 0; j < argc; j++)); do
   case ${argv[j]} in
-  -p | --prompt)
-    PROMPT=1
-    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
-    argc=$(($argc - 1)) # two subtracted
-    # Integer variable decrement - only decrement j because argc and argv
-    # have been adjusted
-    ((j--))
-    ;;
-  -d | --dry-run)
-    DRY=1
-    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
-    argc=$(($argc - 1))
-    ((j--))
-    ;;
-  -v)
-    # Boolean Arguement
-    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+    -p | --prompt)
+      PROMPT=1
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+      argc=$(($argc - 1)) # two subtracted
+      # Integer variable decrement - only decrement j because argc and argv
+      # have been adjusted
+      ((j--))
+      ;;
+    -d | --dry-run)
+      DRY=1
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+      argc=$(($argc - 1))
+      ((j--))
+      ;;
+    -v)
+      # Boolean Arguement
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
 
-    # Remove the arguement from the list of args
-    argc=$(($argc - 1)) # decrement by 1
-    ((j--))
-    set -v
-    set -x
-    ;;
-  -u | --uninstall)
-    UNINSTALL=1
-    argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
-    argc=$(($argc - 1)) # two subtracted
-    # Integer variable decrement - only decrement j because argc and argv
-    # have been adjusted
-    ((j--))
-    ;;
+      # Remove the arguement from the list of args
+      argc=$(($argc - 1)) # decrement by 1
+      ((j--))
+      set -v
+      set -x
+      ;;
+    -u | --uninstall)
+      UNINSTALL=1
+      argv=("${argv[@]:0:$j}" "${argv[@]:($j + 1)}")
+      argc=$(($argc - 1)) # two subtracted
+      # Integer variable decrement - only decrement j because argc and argv
+      # have been adjusted
+      ((j--))
+      ;;
   esac
 done
 
@@ -442,54 +441,56 @@ rust() {
   fi
 }
 
-cd $HOME
+unhide
 # Process Commands
 for ((j = 0; j < argc; j++)); do
   case ${argv[j]} in
-  -h)
-    # Function call
-    help
-    exit
-    ;;
-  --xcode)
-    xcode
-    exit
-    ;;
-  --brew)
-    homebrew
-    exit
-    ;;
-  --denver)
-    denver
-    exit
-    ;;
-  --bundle)
-    bundle
-    exit
-    ;;
-  --shell)
-    shell
-    exit
-    ;;
-  --rust)
-    rust
-    exit
-    ;;
-  --dots)
-    dotfiles
-    exit
-    ;;
-  --priv)
-    hide
-    ;;
-  --pub)
-    unhide
-    ;;
-  *)
-    pp "%s" RED "Invalid Option ${argv[j]}"
-    help
-    exit
-    ;;
+    -h | --help)
+      # Function call
+      help
+      exit
+      ;;
+    --xcode)
+      xcode
+      exit
+      ;;
+    --brew | --homebrew)
+      homebrew
+      exit
+      ;;
+    --denver)
+      denver
+      exit
+      ;;
+    --bundle)
+      bundle
+      exit
+      ;;
+    --shell)
+      shell
+      exit
+      ;;
+    --rust)
+      rust
+      exit
+      ;;
+    --dots | --dotfiles)
+      dotfiles
+      exit
+      ;;
+    --priv | --private)
+      hide
+      exit
+      ;;
+    --pub | --public)
+      unhide
+      exit
+      ;;
+    *)
+      warn "Invalid Option ${argv[j]}"
+      help
+      exit
+      ;;
   esac
 done
 
@@ -497,6 +498,7 @@ if (($UNINSTALL)); then
   rust
   shell
   dotfiles
+  hide
   bundle
   denver
   homebrew
@@ -511,4 +513,5 @@ else
   shell
   rust
   ok "Denver installation complete."
+  hide
 fi
