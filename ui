@@ -153,13 +153,13 @@ bump_version() {
   git fetch origin main --tags
   git rebase origin/main
 
-  echo "$DATE" >VERSION
+  # echo "$DATE" >VERSION
 
   SED="$(command -v gsed || command -v sed)"
   "$SED" -i.bak -e "s/^  version \".*\"$/  version \"${DATE}\"/" Formula/denver.rb
   rm -f Formula/denver.rb.bak
 
-  git add VERSION Formula/denver.rb
+  git add Formula/denver.rb
 
   # Optional: avoid failing when nothing changed
   if git diff --cached --quiet; then
