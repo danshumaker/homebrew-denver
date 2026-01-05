@@ -117,6 +117,8 @@ brew "gobject-introspection"
 brew "grep"
 # GSettings schemas for desktop components
 brew "gsettings-desktop-schemas"
+# Library to render SVG files using Cairo
+brew "librsvg"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
 # Lightweight and flexible command-line JSON processor
@@ -127,8 +129,6 @@ brew "lazygit"
 brew "less"
 # X.509 and CMS library
 brew "libksba"
-# Library to render SVG files using Cairo
-brew "librsvg"
 # Library that implements the rsync remote-delta algorithm
 brew "librsync"
 # Library for converting WMF (Window Metafile Format) files
@@ -191,6 +191,8 @@ brew "ssh-copy-id"
 brew "tig"
 # Terminal multiplexer
 brew "tmux"
+# Display directories as trees (with optional color/HTML output)
+brew "tree"
 # Generator for LS_COLORS with support for multiple color themes
 brew "vivid"
 # Console-based network traffic monitor
@@ -199,6 +201,7 @@ brew "vnstat"
 brew "yamllint"
 # JavaScript package manager
 brew "yarn"
+# denver dotfiles payload for installation and uninstallation scripts
 # Fast file synchronization and network forwarding for remote development
 brew "mutagen-io/mutagen/mutagen"
 # Terminus is Pantheon's Command-line Interface (CLI)
