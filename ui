@@ -185,6 +185,24 @@ update_brewfile() {
   brew bundle remove danshumaker/denver/denver
 }
 
+print_version() {
+  if [[ -e Formula/denver.rb ]]; then
+    # In repo dir so can check the formula
+    info "Repo Formula Version"
+    grep "version" Formula/denver.rb
+    info "Repo Tag Version"
+    git tag --list --sort=creatordate | tail -1
+  else
+    info "Not in Repo directory"
+  fi
+  payload
+
+  info "Installed Version"
+  grep -qx "version" Formula/denver.rb
+  brew info denver
+
+}
+
 case "$OS" in
   Darwin) PLATFORM="macos" ;;
   Linux) PLATFORM="linux" ;;
@@ -504,6 +522,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --ub)
       update_brewfile
+      exit
+      ;;
+    --version)
+      print_version
       exit
       ;;
     *)
