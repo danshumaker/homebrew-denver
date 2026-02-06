@@ -151,15 +151,17 @@ bump_version() {
   # Need it public so the homebrew github update-formula can run
   gh repo edit --visibility public --accept-visibility-change-consequences
   git fetch origin main --tags
-  git rebase origin/main
+  if ! git pull --ff-only origin main; then
+    error "Non-fast-forward update required. Resolve divergence on main before bumping."
+  fi
 
   # Formula updates (version/sha) are handled by the GitHub Action on tag push.
   info "Formula updates are handled by GitHub Actions after the tag is pushed."
   # Do NOT force tags. Fail if tag already exists.
   git tag "${DATE}"
 
-  # Push branch (force-with-lease is fine because you rebased)
-  git push --force-with-lease origin main
+  # Push branch without rewriting history (Homebrew taps break on rewritten history).
+  git push origin main
 
   # Push the new tag (no force)
   git push origin "${DATE}"
