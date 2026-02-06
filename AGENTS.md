@@ -56,9 +56,13 @@ This file captures distilled context from prior work ("Tool manager architecture
 - Prefer GitHub **release assets** and `gh release download` over tag tarballs to avoid caching pitfalls.
 - Fixed asset filename improves install UX; use the release asset API/`gh` to avoid stale cache issues.
 
+### Release Process Adjustment (2026-02-06)
+- `ui --bump` no longer edits `Formula/denver.rb` locally.
+- Formula version/sha updates are now owned by GitHub Actions on tag push.
+- This prevents merge conflicts between local updates and CI updates.
+
 ### GitHub Access Troubleshooting (Historical)
 - Clone failures were due to **SSH auth** while a PAT was provided.
 - Fixes:
   - Force HTTPS in `gh` (`gh config set git_protocol https` + `gh auth setup-git`).
   - Or correctly install and authorize SSH keys with GitHub.
-
