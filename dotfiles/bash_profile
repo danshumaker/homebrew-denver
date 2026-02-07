@@ -165,5 +165,6 @@ export LS_COLORS="$(vivid generate molokai)"
 # Use nvim plugin command instead of loading via the terminal.
 export OPENAI_API_KEY=$(op read op://Shumaker-Shared/OpenAI/OPENAI_API_KEY --no-newline)
 export GPXZ_API_KEY=$(op read op://Shumaker-Shared/GPXZ/API_KEY --no-newline)
+export MAPBOX_API_KEY=$(op read op://Shumaker-Shared/Mapbox/API_TOKEN --no-newline)
 
 source <(op completion bash)
