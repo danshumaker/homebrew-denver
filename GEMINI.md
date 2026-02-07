@@ -35,3 +35,26 @@ The `DEV_NOTES.md` file contains a large amount of information about the user's 
 *   **Shell:** The user uses `bash` and has a customized profile with aliases and functions.
 
 The project has a clear structure for managing dotfiles and seems to be well-documented for personal use. The `DEV_NOTES.md` file is the primary source of information about the project's conventions and usage.
+
+# Achievements
+
+## Homebrew `fatal: rebase-merge directory exists` Error Troubleshooting
+
+Today, we successfully troubleshooted and documented the resolution for a common Homebrew update error.
+
+**Problem:** When running `brew update`, a `fatal: It seems that there is already a rebase-merge directory` error would occur, preventing updates. This indicates a stale `git rebase` state in one of the Homebrew tap repositories.
+
+**Solution:**
+The following command can be run in the terminal to identify the problematic tap and provide the specific command to resolve it:
+
+```bash
+for tap in $(brew tap); do
+  tap_path=$(brew --repo "$tap")
+  if [ -d "$tap_path/.git/rebase-merge" ]; then
+    echo "Found stale rebase directory in: $tap_path"
+    echo "To fix, run: rm -rf "$tap_path/.git/rebase-merge""
+  fi
+done
+```
+
+This command iterates through all installed Homebrew taps, checks each one for the presence of a `.git/rebase-merge` directory, and if found, prints the `rm -rf` command needed to remove the stale directory. Once the `rm -rf` command is executed for the identified tap, `brew update` should function correctly.
