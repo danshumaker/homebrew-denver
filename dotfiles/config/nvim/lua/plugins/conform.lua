@@ -4,6 +4,7 @@ return {
   "stevearc/conform.nvim",
   opts = {
     formatters_by_ft = {
+      markdown = { "prettier" },
       scss = { "prettier" },
       sass = { "prettier" }, -- Prettier only supports SCSS and CSS, not indented SASS
       php = { "phpcbf" },
