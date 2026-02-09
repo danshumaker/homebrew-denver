@@ -7,6 +7,10 @@ tap "universal-ctags/universal-ctags"
 brew "aalib"
 # Library for manipulating PNG images
 brew "libpng"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.14"
+# Next-gen compiler infrastructure
+brew "llvm"
 # Record and share terminal sessions
 brew "asciinema"
 # Macro processing language
@@ -71,18 +75,20 @@ brew "docker-compose"
 brew "docker-credential-helper"
 # Create Docker hosts locally and on cloud providers
 brew "docker-machine"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.14"
 # Text processing system for reStructuredText
 brew "docutils"
 # Open-source, cross-platform JavaScript runtime environment
 brew "node"
 # AST-based pattern checker for JavaScript
 brew "eslint"
+# Perl lib for reading and writing EXIF metadata
+brew "exiftool"
 # Modern, maintained replacement for ls
 brew "eza"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
+# Play, record, convert, and stream select audio and video codecs
+brew "ffmpeg"
 # Collection of GNU find, xargs, and locate
 brew "findutils"
 # Command-line fuzzy finder written in Go
@@ -91,8 +97,16 @@ brew "fzf"
 brew "fzy"
 # GNU awk utility
 brew "gawk"
+# X.509 and CMS library
+brew "libksba"
+# GNOME XML library
+brew "libxml2"
+# Geospatial Data Abstraction Library
+brew "gdal"
 # Toolkit for image loading and pixel buffer manipulation
 brew "gdk-pixbuf"
+# Interact with Google Gemini AI models from the command-line
+brew "gemini-cli"
 # GitHub command-line tool
 brew "gh"
 # Distributed revision control system
@@ -113,13 +127,13 @@ brew "gnu-sed"
 brew "go"
 # Generate introspection data for GObject libraries
 brew "gobject-introspection"
+# Converts/uploads GPS waypoints, tracks, and routes
+brew "gpsbabel"
 # GNU grep, egrep and fgrep
 brew "grep"
 # GSettings schemas for desktop components
 brew "gsettings-desktop-schemas"
-# Library to render SVG files using Cairo
-brew "librsvg"
-# Tools and libraries to manipulate images in many formats
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
@@ -127,16 +141,12 @@ brew "jq"
 brew "lazygit"
 # Pager program similar to more
 brew "less"
-# X.509 and CMS library
-brew "libksba"
+# Library to render SVG files using Cairo
+brew "librsvg"
 # Library that implements the rsync remote-delta algorithm
 brew "librsync"
 # Library for converting WMF (Window Metafile Format) files
 brew "libwmf"
-# GNOME XML library
-brew "libxml2"
-# Next-gen compiler infrastructure
-brew "llvm"
 # Language Server for the Lua language
 brew "lua-language-server"
 # Package manager for the Lua programming language
@@ -210,6 +220,10 @@ brew "pantheon-systems/external/terminus"
 brew "sass/sass/sass"
 # Command-line interface for 1Password
 cask "1password-cli"
+# 3D creation suite
+cask "blender"
+# OpenAI's coding agent that runs in your terminal
+cask "codex"
 cask "font-0xproto-nerd-font"
 cask "font-3270-nerd-font"
 cask "font-adwaita-mono-nerd-font"
@@ -233,6 +247,8 @@ cask "font-dejavu-sans-mono-nerd-font"
 cask "font-departure-mono-nerd-font"
 # GPU-based terminal emulator
 cask "kitty"
+# Rename a list of files quickly
+cask "namechanger"
 # MySQL/MariaDB database management
 cask "sequel-ace"
 # Binary releases of VS Code without MS branding/telemetry/licensing
