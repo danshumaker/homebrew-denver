@@ -155,10 +155,10 @@ brew "luarocks"
 brew "mas"
 # Simple tool to make locally trusted development certificates
 brew "mkcert"
-# General-purpose lossless data-compression library
-brew "zlib"
 # Open source relational database management system
 brew "mysql"
+# General-purpose lossless data-compression library
+brew "zlib"
 # Open source relational database management system
 brew "mysql-client"
 # NCurses Disk Usage
@@ -211,7 +211,6 @@ brew "vnstat"
 brew "yamllint"
 # JavaScript package manager
 brew "yarn"
-# denver dotfiles payload for installation and uninstallation scripts
 # Fast file synchronization and network forwarding for remote development
 brew "mutagen-io/mutagen/mutagen"
 # Terminus is Pantheon's Command-line Interface (CLI)
@@ -224,6 +223,8 @@ cask "1password-cli"
 cask "blender"
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
+# Browser for SQLite databases
+cask "db-browser-for-sqlite"
 cask "font-0xproto-nerd-font"
 cask "font-3270-nerd-font"
 cask "font-adwaita-mono-nerd-font"
