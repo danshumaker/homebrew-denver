@@ -75,7 +75,15 @@ alias gs='git st'
 alias gt='git tag -l -n1'
 # GIT_LOG_FORMAT="%C(yellow)%h %C(green)%<(20,trunc)%an %C(red)%<(26,trunc)%ad%C(reset) %s "
 
-GIT_LOG_FORMAT="%C(yellow)%h %C(green)%<(20,trunc)%an %C(red)%<(26,trunc)%ad%C(reset) %s%n%w(0,4,4)%b "
+#   * h (%h): Abbreviated commit hash (e.g., 7b3e1a2).
+#   * an (%an): Author name.
+#   * ad (%ad): Author date (respects the --date= option).
+#   * s (%s): Subject (the first line of the commit message).
+#   * n (%n): Newline.
+#   * w (%w): Line wrapping. Usually used as %w(width[,indent1[,indent2]]) to control how the message is wrapped and indented.
+#   * b (%b): Body (the rest of the commit message after the subject).
+
+GIT_LOG_FORMAT="%C(yellow)%h %C(green)%<(20,trunc)%an %C(red)%<(26,trunc)%ad%C(blue)%d %C(reset) %s%n%w(0,4,4)%b "
 alias gl='git log --pretty=format:"$GIT_LOG_FORMAT" --abbrev-commit'
 alias gla='git log --pretty=format:"$GIT_LOG_FORMAT" --abbrev-commit --all'
 alias glaa='git log --pretty=format:"$GIT_LOG_FORMAT" `git tag | tail -1`..'
