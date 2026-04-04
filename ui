@@ -37,6 +37,7 @@ function help() {
 
     -h|--help        (print help)
     -v               (turn on verbose debugging)
+    --version        (print versions)
     -u|--uninstall   (uninstall everything or specified asset)
     --priv|--private (make repo private)
     --pub|--public   (make repo public)
@@ -87,7 +88,8 @@ START
   echo "$HELP"
   echo ""
 }
-info() { printf "%s[INFO]%s %s\n" "$BLUE" "$RESET" "$*"; }
+info() { printf "%s[INFO]%s %s" "$BLUE" "$RESET" "$*"; }
+infon() { printf "%s[INFO]%s %s\n" "$BLUE" "$RESET" "$*"; }
 warn() { printf "%s[WARN]%s %s\n" "$YELLOW" "$RESET" "$*"; }
 error() {
   printf "%s[ERROR]%s %s\n" "$RED" "$RESET" "$*"
@@ -176,17 +178,16 @@ update_brewfile() {
 print_version() {
   if [[ -e Formula/denver.rb ]]; then
     # In repo dir so can check the formula
-    info "Repo Formula Version"
+    info "SOURCE /Formula/denver.rb Version:"
     grep "version" Formula/denver.rb
-    info "Repo Tag Version"
+    info "SOURCE Git Tag Version: "
     git tag --list --sort=creatordate | tail -1
   else
     info "Not in Repo directory"
   fi
   payload
 
-  info "Installed Version"
-  grep -qx "version" Formula/denver.rb
+  info "BREW INSTALLED"
   brew info denver
 
 }
@@ -302,7 +303,7 @@ payload() {
     error "Denver payload directory missing: $PAYLOAD_DIR"
   fi
 
-  info "Denver payload detected at: $PAYLOAD_DIR"
+  infon "Denver payload detected at: $PAYLOAD_DIR"
 
   # ---------------- Verify Brewfile Exists ----------------
 
